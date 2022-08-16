@@ -5,8 +5,6 @@ import { useWebsocketDispatch, useWebsocketState } from '../../context';
 
 function ConnectionsPanel(props) {
 
-  console.log(process.env);
-
   useEffect(() => {
     connect();
 
