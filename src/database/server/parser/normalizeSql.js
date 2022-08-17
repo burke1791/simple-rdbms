@@ -6,7 +6,7 @@
  */
 export function normalizeSqlText(sql) {
   // replace newline and tab characters with a space, and replace groups of spaces with a single space
-  const normalizedSql = sql.replace('\n', ' ').replace('\t', ' ').replace(/\s\s+/g, ' ');
+  const normalizedSql = sql.replace(/\n/g, ' ').replace(/\t/g, ' ').replace(/\s\s+/g, ' ');
 
   const words = normalizedSql.split(' ');
 

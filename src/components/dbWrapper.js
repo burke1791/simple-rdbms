@@ -12,6 +12,7 @@ function DbWrapper(props) {
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.QUERY, DbWrapper, executeQuery);
+    Pubsub.subscribe(NOTIF.QUERY_BACKGROUND, DbWrapper, executeQueryBackground);
 
     startDbServer();
 
@@ -37,6 +38,19 @@ function DbWrapper(props) {
       recordset: records
     };
     Pubsub.publish(NOTIF.QUERY_RESULT, result);
+  }
+
+  const executeQueryBackground = (query) => {
+    console.log('received query: ');
+    console.log(query);
+    const tree = parser(query.sql);
+    console.log(tree);
+    const records = buffer.executeQuery(tree);
+    const result = {
+      queryId: query.id,
+      recordset: records
+    };
+    Pubsub.publish(NOTIF.QUERY_RESULT_BACKGROUND, result);
   }
 
   return props.children;

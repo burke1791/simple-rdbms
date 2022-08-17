@@ -7,6 +7,7 @@ import DbWrapper from './components/dbWrapper';
 import { ObjectsPanel } from './panels/objects';
 import { CodeEditor } from './panels/codeEditor';
 import { NOTIF, Pubsub } from './utilities';
+import { Results } from './panels/results';
 
 const { Sider, Content } = Layout;
 
@@ -40,7 +41,7 @@ function App() {
                 <CodeEditor />
               </Row>
               <Row>
-                {/* Results Panel */}
+                <Results />
               </Row>
             </Content>
           </Layout>

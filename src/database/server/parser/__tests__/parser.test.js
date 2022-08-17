@@ -19,7 +19,7 @@ describe('parser', () => {
   });
 
   test('select column from', () => {
-    const query = 'select col1 from table';
+    const query = 'select col1\nfrom table';
     const tree = {
       type: 'statement',
       variant: 'select',
@@ -41,7 +41,7 @@ describe('parser', () => {
   });
 
   test('select multi-column from where', () => {
-    const query = 'select col1, col2 from table where col1 = 5';
+    const query = 'select col1, col2\nfrom table\nwhere col1 = 5';
     const tree = {
       type: 'statement',
       variant: 'select',

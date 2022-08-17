@@ -13,7 +13,7 @@ function ObjectsPanel(props) {
 
   useEffect(() => {
     if (connected) {
-      Pubsub.subscribe(NOTIF.QUERY_RESULT, ObjectsPanel, handleQueryResult);
+      Pubsub.subscribe(NOTIF.QUERY_RESULT_BACKGROUND, ObjectsPanel, handleQueryResult);
       fetchTables();
     }
   }, [connected]);
@@ -29,7 +29,7 @@ function ObjectsPanel(props) {
       id: uuid
     };
 
-    Pubsub.publish(NOTIF.QUERY, query);
+    Pubsub.publish(NOTIF.QUERY_BACKGROUND, query);
   }
 
   const handleQueryResult = (data) => {

@@ -11,6 +11,7 @@ import { parseWhereNode } from './sqlClauses/where';
  */
 export function parser(sql) {
   const words = normalizeSqlText(sql);
+  console.log(words);
 
   const tree = generateSelectTree(words);
 
