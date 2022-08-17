@@ -3,24 +3,24 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: path.resolve(__dirname, '.env.local') });
+// dotenv.config({ path: path.resolve(__dirname, '.env.local') });
 
-const NAMESPACES = ['NODE_', 'SRDBMS_'];
+// const NAMESPACES = ['NODE_', 'SRDBMS_'];
 
-process.env = Object.entries({ ...process.env }).reduce((acc, [key, value]) => {
-  const hasValidNamespace = NAMESPACES.some(ns => key.includes(ns));
+// process.env = Object.entries({ ...process.env }).reduce((acc, [key, value]) => {
+//   const hasValidNamespace = NAMESPACES.some(ns => key.includes(ns));
 
-  if (hasValidNamespace) {
-    return {
-      ...acc,
-      [key]: value
-    }
-  } else {
-    return {
-      ...acc
-    }
-  }
-}, {});
+//   if (hasValidNamespace) {
+//     return {
+//       ...acc,
+//       [key]: value
+//     }
+//   } else {
+//     return {
+//       ...acc
+//     }
+//   }
+// }, {});
 
 const config = {
   entry: {
@@ -51,12 +51,13 @@ const config = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'public', 'index.html')
     }),
-    new webpack.DefinePlugin({
-      'process.env': JSON.stringify(process.env)
-    })
+    // new webpack.DefinePlugin({
+    //   'process.env': JSON.stringify(process.env)
+    // })
   ],
   devServer: {
-    open: true
+    open: true,
+    port: 3000
   }
 };
 

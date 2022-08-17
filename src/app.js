@@ -1,29 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Layout } from 'antd';
+import React, { useEffect } from 'react';
+import { Layout, Row } from 'antd';
 import 'antd/dist/antd.css';
 
-import io from 'socket.io-client';
-import { WebsocketProvider } from './context';
-import { ConnectionsPanel } from './panels/connections';
-import TableItems from './panels/connections/tableItems';
+import { DbProvider } from './context';
+import DbWrapper from './components/dbWrapper';
+import { ObjectsPanel } from './panels/objects';
+import { CodeEditor } from './panels/codeEditor';
+import { NOTIF, Pubsub } from './utilities';
 
 const { Sider, Content } = Layout;
 
 function App() {
 
+  useEffect(() => {
+    document.addEventListener('keydown', disableF5);
+
+    return (() => {
+      document.removeEventListener('keydown');
+    })
+  }, []);
+
+  const disableF5 = (e) => {
+    if (e.which == 116) {
+      e.preventDefault();
+      Pubsub.publish(NOTIF.QUERY_F5, null);
+    }
+  }
+
   return (
-    <WebsocketProvider>
-      <Layout style={{ height: '100vh' }}>
-        <Sider>
-          <ConnectionsPanel />
-        </Sider>
-        <Layout>
-          <Content>
-            <TableItems />
-          </Content>
+    <DbProvider>
+      <DbWrapper>
+        <Layout style={{ height: '100vh' }}>
+          <Sider>
+            <ObjectsPanel />
+          </Sider>
+          <Layout>
+            <Content>
+              <Row>
+                <CodeEditor />
+              </Row>
+              <Row>
+                {/* Results Panel */}
+              </Row>
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
-    </WebsocketProvider>
+      </DbWrapper>
+    </DbProvider>
   );
 }
 

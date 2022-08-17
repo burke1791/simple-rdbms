@@ -1,5 +1,5 @@
-
-export const WEBSOCKET_MESSAGE_TYPES = {
-  FETCH_TABLES: 'FETCH_TABLES',
-  QUERY: 'QUERY'
-};
+export const NOTIF = {
+  QUERY: 'QUERY',
+  QUERY_RESULT: 'QUERY_RESULT',
+  QUERY_F5: 'QUERY_F5'
+}
