@@ -1,4 +1,4 @@
-import BufferPool from '../../bufferPool';
+import { BufferPool } from '../../bufferPool';
 import { generateBlankPage } from '../../bufferPool/serializer';
 import { writePageToDisk } from '../../storageEngine';
 import { getNewColumnInsertValues, initColumnsTableDefinition, initializeColumnsTable, _getNewColumnInsertValues } from '../columns';

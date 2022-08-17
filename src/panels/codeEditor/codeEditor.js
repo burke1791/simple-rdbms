@@ -58,6 +58,7 @@ function CodeEditor() {
       value={sql}
       style={{ height: '50vh', width: '100%', fontFamily: 'monospace' }}
       onChange={handleChange}
+      spellCheck={'false'}
     />
   );
 }
