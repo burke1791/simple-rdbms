@@ -3,6 +3,7 @@ import { parseFromNode } from './sqlClauses/from';
 import { normalizeSqlText } from './normalizeSql';
 import { parseSelectResultArray } from './sqlClauses/select';
 import { parseWhereNode } from './sqlClauses/where';
+import sqliteParser from 'sqlite-parser';
 
 /**
  * @function
@@ -12,6 +13,9 @@ import { parseWhereNode } from './sqlClauses/where';
 export function parser(sql) {
   const words = normalizeSqlText(sql);
 
+  const testTree = sqliteParser(sql);
+  console.log('testTree:');
+  console.log(testTree);
   const tree = generateSelectTree(words);
 
   return tree;
