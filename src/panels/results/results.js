@@ -61,7 +61,8 @@ function Results() {
         return {
           align: 'left',
           dataIndex: col.name,
-          title: <Text code ellipsis>{col.name}</Text>
+          title: <Text code ellipsis>{col.name}</Text>,
+          width: 250
         };
       });
 

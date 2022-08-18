@@ -34,7 +34,6 @@ function ObjectsPanel(props) {
 
   const handleQueryResult = (data) => {
     if (data.queryId == queryId.current) {
-      console.log(data.recordset);
       const sortedTables = data.recordset.sort((a, b) => a.schema_name - b.schema_name || a.object_name - b.object_name);
       setTables(sortedTables);
     }

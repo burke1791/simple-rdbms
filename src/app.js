@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   const disableF5 = (e) => {
-    if (e.which == 116) {
+    if (e.which == 116 || (e.metaKey && e.which == 69)) {
       e.preventDefault();
       Pubsub.publish(NOTIF.QUERY_F5, null);
     }

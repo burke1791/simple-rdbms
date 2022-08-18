@@ -51,7 +51,8 @@ function evaluateSubtree(row, tree) {
         value = Number(tree.value);
         break;
       case 'text':
-        value = tree.value;
+        // remove single quotes on either side of the string
+        value = tree.value.substring(1, tree.value.length - 1);
         break;
       case 'null':
         value = null;
