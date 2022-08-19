@@ -1,4 +1,3 @@
-import { SQL_CLAUSES } from '../../utilities/constants';
 import { parseFromNode } from './sqlClauses/from';
 import { normalizeSqlText } from './normalizeSql';
 import { parseSelectResultArray } from './sqlClauses/select';

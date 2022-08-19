@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Editor from 'react-simple-code-editor';
 import Prism from 'prismjs';
 
-import { NOTIF, Pubsub } from '../../utilities';
+import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 import { useDbDispatch } from '../../context';
 
 function CodeEditor() {
@@ -44,6 +44,7 @@ function CodeEditor() {
 
     const query = {
       sql: sql,
+      type: QUERY_TYPE.USER,
       id: uuid
     };
 
@@ -51,10 +52,12 @@ function CodeEditor() {
   }
 
   const handleQueryResult = (data) => {
-    if (data.queryId == queryId.current) {
+    if (data.queryId == queryId.current && data.type == 'RESULTS') {
       console.log(data.recordset);
       dbDispatch({ type: 'update', key: 'data', value: data.recordset });
       dbDispatch({ type: 'update', key: 'newData', value: new Date().valueOf() });
+    } else if (data.queryId == queryId.current && data.type == 'ERROR') {
+      console.log(error);
     }
   }
 

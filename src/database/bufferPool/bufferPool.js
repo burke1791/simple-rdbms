@@ -124,8 +124,19 @@ function BufferPool(maxPageCount) {
     /*
       Currently allowing single-table queries only
     */
+
+    const table = from.name.split('.');
+    let schemaName;
+    let tableName;
+
+    if (table.length == 2) {
+      schemaName = table[0];
+      tableName = table[1]; 
+    } else if (table.length == 1) {
+      schemaName = 'dbo';
+      tableName = table[0];
+    }
     
-    const { schemaName, tableName } = from;
     const objectRecord = getTableObjectByName(this, schemaName, tableName);
     const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
     const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography } from 'antd';
-import { NOTIF, Pubsub } from '../../utilities';
+import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 import { useDbState } from '../../context';
 
 const { Text } = Typography;
@@ -27,9 +27,11 @@ function Results() {
     }
   }, [newData]);
 
-  const clearResults = () => {
-    setResults([]);
-    setLoading(true);
+  const clearResults = (query) => {
+    if (query.type == QUERY_TYPE.USER) {
+      setResults([]);
+      setLoading(true);
+    }
   }
 
   const populateResults = () => {

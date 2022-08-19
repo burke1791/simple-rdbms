@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Menu } from 'antd';
 import { TableOutlined } from '@ant-design/icons';
 import { useDbState } from '../../context';
-import { NOTIF, Pubsub } from '../../utilities';
+import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 
 function ObjectsPanel(props) {
 
@@ -13,7 +13,7 @@ function ObjectsPanel(props) {
 
   useEffect(() => {
     if (connected) {
-      Pubsub.subscribe(NOTIF.QUERY_RESULT_BACKGROUND, ObjectsPanel, handleQueryResult);
+      Pubsub.subscribe(NOTIF.QUERY_RESULT, ObjectsPanel, handleQueryResult);
       fetchTables();
     }
   }, [connected]);
@@ -26,16 +26,19 @@ function ObjectsPanel(props) {
 
     const query = {
       sql: sql,
+      type: QUERY_TYPE.BACKGROUND,
       id: uuid
     };
 
-    Pubsub.publish(NOTIF.QUERY_BACKGROUND, query);
+    Pubsub.publish(NOTIF.QUERY, query);
   }
 
   const handleQueryResult = (data) => {
-    if (data.queryId == queryId.current) {
+    if (data.queryId == queryId.current && data.type == 'RESULTS') {
       const sortedTables = data.recordset.sort((a, b) => a.schema_name - b.schema_name || a.object_name - b.object_name);
       setTables(sortedTables);
+    } else {
+      console.log(data);
     }
   }
 

@@ -1,6 +1,6 @@
-import { BufferPool } from "../../bufferPool";
-import { fileExists } from "../../storageEngine/reader";
-import { initColumnsTableDefinition, initializeColumnsTable, initializeObjectsTable, initializeSequencesTable, initObjectsTableDefinition, initSequencesTableDefinition } from "../../system";
+import { BufferPool } from '../bufferPool';
+import { fileExists } from '../storageEngine/reader';
+import { initColumnsTableDefinition, initializeColumnsTable, initializeObjectsTable, initializeSequencesTable, initObjectsTableDefinition, initSequencesTableDefinition } from '../system';
 
 /**
  * @function

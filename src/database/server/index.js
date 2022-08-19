@@ -1,2 +1,1 @@
-export { startup } from './lifecycle';
-export * from './parser';
+export { startup } from './startup';
