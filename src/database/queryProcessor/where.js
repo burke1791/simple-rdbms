@@ -6,7 +6,7 @@
  * @returns {Array<Array<ResultCell>>}
  */
  export function filterResults(results, where) {
-  if (where.length == 0) return results;
+  if (!where || where.length == 0) return results;
 
   return results.filter(row => {
     return evaluateRow(row, where);
@@ -51,8 +51,7 @@ function evaluateSubtree(row, tree) {
         value = Number(tree.value);
         break;
       case 'text':
-        // remove single quotes on either side of the string
-        value = tree.value.substring(1, tree.value.length - 1);
+        value = tree.value;
         break;
       case 'null':
         value = null;

@@ -6,6 +6,7 @@ import { sequencesTableDefinition } from '../system/sequences';
 import { getHeaderValue } from './deserializer';
 import Page from './page';
 import { serializeRecord } from './serializer';
+import sqliteParser from 'sqlite-parser';
 
 /**
  * @class
@@ -52,29 +53,6 @@ function BufferPool(maxPageCount) {
   /**
    * @method
    * @param {Number} pageId 
-   * @param {Array<SimplePredicate>} predicate
-   * @param {Array<ColumnDefinition>} columnDefinitions
-   * @param {Array<Array<ResultCell>>} [results]
-   * @returns {{Array<Array<ResultCell>>}}
-   */
-  this.scan = (pageId, predicate, columnDefinitions, results = []) => {
-    if (this.pages[pageId] == undefined) {
-      this.loadPageIntoMemory('data', pageId);
-    }
-
-    const page = this.pages[pageId];
-
-    if (getHeaderValue('pageType', page.header) == '2') {
-      throw new Error('Index pages are not supported yet!');
-    } else {
-      results.push(...page.select(predicate, columnDefinitions));
-      return results;
-    }
-  }
-
-  /**
-   * @method
-   * @param {Number} pageId 
    * @param {Array<SqlWhereNode>} predicate
    * @param {Array<ColumnDefinition>} columnDefinitions
    * @param {Array<Array<ResultCell>>} [results]
@@ -94,100 +72,6 @@ function BufferPool(maxPageCount) {
       const filteredResults = filterResults(results, where);
       return filteredResults;
     }
-  }
-
-  /**
-   * @method
-   * @param {String} schemaName 
-   * @param {String} tableName 
-   * @param {Array<SimplePredicate>} predicate 
-   * @returns {Array<Array<ResultCell>>}
-   */
-  this.executeSelect = (schemaName, tableName, predicate) => {
-    /*
-      1. Find the root_page_id for the provided [schema].[table] from the system objects table
-      2. Scan the page for records while evaluating the predicate
-    */
-
-    const objectRecord = getTableObjectByName(this, schemaName, tableName);
-    const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
-    const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;
-
-    const columnDefinitions = getColumnDefinitionsByTableObjectId(this, tableObjectId);
-    
-    const results = this.scan(rootPageId, predicate, columnDefinitions, results);
-
-    return results;
-  }
-
-  /**
-   * @function
-   * @param {SqlStatementTree} query
-   * @returns {Array<Array<ResultCell>>}
-   */
-  this.executeSelectQuery = (query) => {
-    /*
-      Currently allowing single-table queries only
-    */
-
-    const table = query.from.name.split('.');
-    let schemaName;
-    let tableName;
-
-    if (table.length == 2) {
-      schemaName = table[0];
-      tableName = table[1]; 
-    } else if (table.length == 1) {
-      schemaName = 'dbo';
-      tableName = table[0];
-    }
-    
-    const objectRecord = getTableObjectByName(this, schemaName, tableName);
-    const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
-    const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;
-
-    const columnDefinitions = getColumnDefinitionsByTableObjectId(this, tableObjectId);
-    
-    const results = this.pageScan(rootPageId, query.where, columnDefinitions, results);
-
-    return results;
-  }
-
-  /**
-   * @function
-   * @param {SqlStatementTree} query 
-   * @returns {Array<Array<ResultCell>>}
-   */
-  this.executeQuery = (query) => {
-
-    let results;
-
-    // assuming a 'statement' type
-    switch (query.variant) {
-      case 'select':
-        results = this.executeSelectQuery(query);
-        break;
-      default:
-        throw new Error('We only support SELECT queries at the moment');
-    }
-
-    // prune columns not defined in the query object
-    if (query.result[0].variant != 'star') {
-      const prunedResults = results.map(row => {
-        const columns = row.filter(col => {
-          const matchedCol = query.result.find(res => res.type == 'identifier' && res.name === col.name.toLowerCase());
-
-          if (matchedCol == undefined) return false;
-          return true;
-        });
-
-        return columns;
-      });
-
-      return prunedResults;
-    }
-
-    return results;
   }
 
   /**

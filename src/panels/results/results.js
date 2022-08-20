@@ -63,7 +63,14 @@ function Results() {
           align: 'left',
           dataIndex: col.name,
           title: <Text code ellipsis>{col.name}</Text>,
-          width: 250
+          width: 250,
+          render: (text) => {
+            let value = text;
+            if (typeof text == 'boolean') {
+              value = text ? 'true' : 'false';
+            }
+            return <Text>{value}</Text>;
+          }
         };
       });
 

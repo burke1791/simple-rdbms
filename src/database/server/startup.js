@@ -1,6 +1,7 @@
 import { BufferPool } from '../bufferPool';
 import { fileExists } from '../storageEngine/reader';
 import { initColumnsTableDefinition, initializeColumnsTable, initializeObjectsTable, initializeSequencesTable, initObjectsTableDefinition, initSequencesTableDefinition } from '../system';
+import { createPersonTable } from './createPersonTable';
 
 /**
  * @function
@@ -19,9 +20,12 @@ export function startup(buffer) {
 
       initObjectsTableDefinition(buffer, 1);
       initSequencesTableDefinition(buffer, 8);
-      initColumnsTableDefinition(buffer, 12);
+      initColumnsTableDefinition(buffer, 13);
 
       buffer.flushAll();
+
+      // seed the databasee with example table(s) and data
+      // createPersonTable(buffer);
     }
 
     buffer.loadPageIntoMemory('data', 1);

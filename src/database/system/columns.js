@@ -3,6 +3,7 @@ import { generateBlankPage } from '../bufferPool/serializer';
 import { writePageToDisk } from '../storageEngine';
 import { getTableObjectByName } from './objects';
 import { getNextSequenceValue } from './sequences';
+import sqliteParser from 'sqlite-parser';
 
 export const columnsTableDefinition = [
   {
@@ -216,14 +217,17 @@ export function getColumnDefinitionsByName(buffer, schemaName, tableName) {
  * @returns {Array<ColumnDefinition>}
  */
 export function getColumnDefinitionsByTableObjectId(buffer, tableObjectId) {
-  const predicate = [
-    {
-      colName: 'parent_object_id',
-      colValue: tableObjectId 
-    }
-  ];
+  const query = `
+    Select  *
+    From sys.columns
+    Where parent_object_id = ${tableObjectId}
+  `;
 
-  const resultSet = buffer.scan(3, predicate, columnsTableDefinition, []);
+  const tree = sqliteParser(query);
+
+  const predicate = tree.statement[0].where;
+
+  const resultSet = buffer.pageScan(3, predicate, columnsTableDefinition, []);
 
   const columnDefinitions = [];
 

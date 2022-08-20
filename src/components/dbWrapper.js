@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDbDispatch } from '../context';
 import { BufferPool } from '../database/bufferPool';
 import { startup } from '../database/server';
-import { NOTIF, Pubsub } from '../utilities';
+import { clearLocalStorage, NOTIF, Pubsub } from '../utilities';
 import sqliteParser from 'sqlite-parser';
 import { executeQuery } from '../database/queryProcessor';
 
@@ -24,6 +24,7 @@ function DbWrapper(props) {
   }, []);
 
   const startDbServer = () => {
+    clearLocalStorage();
     startup(buffer);
     dbDispatch({ type: 'update', key: 'connected', value: true });
   }

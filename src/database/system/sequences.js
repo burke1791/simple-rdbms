@@ -21,12 +21,20 @@ export const sequencesTableDefinition = [
     order: 2
   },
   {
+    name: 'column_id',
+    dataType: 2,
+    isVariable: false,
+    isNullable: true,
+    maxLength: null,
+    order: 3
+  },
+  {
     name: 'next_sequence_value',
     dataType: 3,
     isVariable: false,
     isNullable: false,
     maxLength: null,
-    order: 3
+    order: 4
   },
   {
     name: 'sequence_increment',
@@ -34,7 +42,7 @@ export const sequencesTableDefinition = [
     isVariable: false,
     isNullable: false,
     maxLength: null,
-    order: 4
+    order: 5
   }
 ];
 
@@ -59,7 +67,7 @@ export function initializeSequencesTable(buffer) {
  * @param {BufferPool} buffer 
  */
 function initPagesSequence(buffer) {
-  const insertValues = getNewSequenceInsertValues(1, 1, 4, 1);
+  const insertValues = getNewSequenceInsertValues(1, 1, null, 4, 1);
 
   buffer.executeSystemSequenceInsert(insertValues);
 }
@@ -69,7 +77,7 @@ function initPagesSequence(buffer) {
  * @param {BufferPool} buffer 
  */
 function initObjectsSequence(buffer) {
-  const insertValues = getNewSequenceInsertValues(2, 2, 5, 1);
+  const insertValues = getNewSequenceInsertValues(2, 2, 1, 5, 1);
 
   buffer.executeSystemSequenceInsert(insertValues);
 }
@@ -79,7 +87,7 @@ function initObjectsSequence(buffer) {
  * @param {BufferPool} buffer 
  */
  function initSequencesSequence(buffer) {
-  const insertValues = getNewSequenceInsertValues(3, 3, 5, 1);
+  const insertValues = getNewSequenceInsertValues(3, 3, 8, 5, 1);
 
   buffer.executeSystemSequenceInsert(insertValues);
 }
@@ -89,7 +97,7 @@ function initObjectsSequence(buffer) {
  * @param {BufferPool} buffer 
  */
  function initColumnsSequence(buffer) {
-  const insertValues = getNewSequenceInsertValues(4, 4, 20, 1);
+  const insertValues = getNewSequenceInsertValues(4, 4, 13, 21, 1);
 
   buffer.executeSystemSequenceInsert(insertValues);
 }
@@ -108,7 +116,7 @@ export function initSequencesTableDefinition(buffer, startingColumnId) {
   });
 }
 
-function getNewSequenceInsertValues(sequenceId, objectId, nextSequenceValue, sequenceIncrement) {
+function getNewSequenceInsertValues(sequenceId, objectId, columnId, nextSequenceValue, sequenceIncrement) {
   return [
     {
       name: 'sequence_id',
@@ -117,6 +125,10 @@ function getNewSequenceInsertValues(sequenceId, objectId, nextSequenceValue, seq
     {
       name: 'object_id',
       value: objectId
+    },
+    {
+      name: 'column_id',
+      value: columnId
     },
     {
       name: 'next_sequence_value',
@@ -133,9 +145,10 @@ function getNewSequenceInsertValues(sequenceId, objectId, nextSequenceValue, seq
  * @function
  * @param {BufferPool} buffer 
  * @param {Number} objectId
+ * @param {Number} [columnId]
  * @returns {Number}
  */
-export function getNextSequenceValue(buffer, objectId) {
+export function getNextSequenceValue(buffer, objectId, columnId) {
   const predicate = [
     {
       colName: 'object_id',
@@ -144,6 +157,7 @@ export function getNextSequenceValue(buffer, objectId) {
   ];
 
   const resultset = buffer.executeSelect('sys', 'sequences', predicate);
+  const sequenceId = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_id').value);
   const nextSequenceValue = Number(resultset[0].find(col => col.name.toLowerCase() === 'next_sequence_value').value);
   const seqIncrement = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_increment').value);
 

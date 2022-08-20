@@ -2,6 +2,7 @@ import BufferPool from '../bufferPool';
 import { generateBlankPage } from '../bufferPool/serializer';
 import { writePageToDisk } from '../storageEngine';
 import { _getNewColumnInsertValues } from './columns';
+import sqliteParser from 'sqlite-parser';
 
 export const objectsTableDefinition = [
   {
@@ -212,22 +213,18 @@ export function getObjectById(buffer, objectId) {
  * @returns {Array<ResultCell>}
  */
 export function getTableObjectByName(buffer, schema_name, table_name) {
-  const predicate = [
-    {
-      colName: 'schema_name',
-      colValue: schema_name
-    },
-    {
-      colName: 'object_name',
-      colValue: table_name
-    },
-    {
-      colName: 'object_type_id',
-      colValue: 1
-    }
-  ];
+  const query = `
+    Select *
+    From sys.objects
+    Where schema_name = '${schema_name}'
+      And object_name = '${table_name}'
+      And object_type_id = 1
+  `
+  const tree = sqliteParser(query);
 
-  const resultSet = buffer.scan(1, predicate, objectsTableDefinition, []);
+  const predicate = tree.statement[0].where;
+
+  const resultSet = buffer.pageScan(1, predicate, objectsTableDefinition, []);
 
   if (resultSet.length > 1) {
     throw new Error('getTableObjectByName: returned more than one result for schema: ' + schema_name + ' and object: ' + table_name);

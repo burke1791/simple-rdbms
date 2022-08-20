@@ -66,42 +66,6 @@ function Page() {
 
   /**
    * @method
-   * @param {Array<SimplePredicate>} [predicate]
-   * @param {Array<ColumnDefinition>} columnDefinitions
-   * @returns {Array<Array<ResultCell>>}
-   */
-  this.select = (predicate = [], columnDefinitions) => {
-    const records = [];
-
-    const slotArr = this.slotArray.match(/[\s\S]{1,4}/g) || [];
-    for (let i = slotArr.length - 1; i >= 0; i--) {
-      let recordIndex = Number(slotArr[i]);
-      records.push(deserializeRecord(recordIndex, this.data, columnDefinitions));
-    }
-
-    let resultset;
-
-    if (predicate.length > 0) {
-      resultset = records.filter(record => {
-        for (let col of record) {
-          const pred = predicate.find(p => p.colName.toLowerCase() == col.name.toLowerCase());
-
-          if (pred != undefined) {
-            if (pred.colValue != col.value) return false;
-          }
-        }
-        
-        return true;
-      });
-    } else {
-      resultset = records;
-    }
-
-    return resultset;
-  }
-
-  /**
-   * @method
    * @param {Array<ColumnDefinition>} columnDefinitions
    * @returns {Array<Array<ResultCell>>}
    */
