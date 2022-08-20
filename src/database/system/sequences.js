@@ -2,6 +2,8 @@ import BufferPool from '../bufferPool';
 import { generateBlankPage } from '../bufferPool/serializer';
 import { writePageToDisk } from '../storageEngine';
 import { getNewColumnInsertValues, _getNewColumnInsertValues } from './columns';
+import sqliteParser from 'sqlite-parser';
+import { executeUpdate } from '../queryProcessor/update';
 
 export const sequencesTableDefinition = [
   {
@@ -154,21 +156,39 @@ function getNewSequenceInsertValues(sequenceId, objectId, columnId, nextSequence
  * @returns {Number}
  */
 export function getNextSequenceValue(buffer, objectId, columnId) {
-  const predicate = [
-    {
-      colName: 'object_id',
-      colValue: objectId
-    }
-  ];
+  let query = `
+    Select  *
+    From sys.sequences
+    Where object_id = ${objectId}
+  `;
 
-  const resultset = buffer.executeSelect('sys', 'sequences', predicate);
+  if (columnId) {
+    query = query + 'And column_id = ' + columnId;
+  }
+
+  const tree = sqliteParser(query);
+  const predicate = tree.statement[0].where;
+
+  const resultset = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
+
+  if (resultSet.length > 1) {
+    throw new Error('getNextSequenceValue: returned more than one result for schema: ' + schema_name + ' and object: ' + table_name);
+  }
+
   const sequenceId = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_id').value);
   const nextSequenceValue = Number(resultset[0].find(col => col.name.toLowerCase() === 'next_sequence_value').value);
   const seqIncrement = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_increment').value);
 
-  /**
-   * @todo update the next_sequence_value
-   */
+  query = `
+    Update sys.objects
+    Set next_sequence_value = next_sequence_value + sequence_increment
+    Where sequence_id = ${sequenceId}
+  `;
+
+  const updTree = sqliteParser(query);
+
+  const rowCount = executeUpdate(buffer, updTree.statement[0], 'SYSTEM');
+  console.log('update count: ' + rowCount);
 
   return nextSequenceValue;
 }

@@ -31,7 +31,7 @@ export function executeSelect(buffer, queryTree) {
 
   const columnDefinitions = getColumnDefinitionsByTableObjectId(buffer, tableObjectId);
   
-  const results = buffer.pageScan(rootPageId, queryTree.where, columnDefinitions, results);
+  const results = buffer.pageScan(rootPageId, queryTree.where, columnDefinitions, []);
 
   const filteredResults = filterResultColumns(results, queryTree);
 

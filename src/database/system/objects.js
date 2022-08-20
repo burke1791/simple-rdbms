@@ -152,7 +152,7 @@ export function initObjectsTableDefinition(buffer, startingColumnId) {
  * @param {Number} parentObjectId 
  * @returns 
  */
-function _getNewObjectInsertValues(objectId, objectTypeId, isSystemObject, schemaName, objectName, rootPageId, parentObjectId) {
+export function _getNewObjectInsertValues(objectId, objectTypeId, isSystemObject, schemaName, objectName, rootPageId, parentObjectId) {
   return [
     {
       name: 'object_id',

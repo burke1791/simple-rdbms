@@ -11,6 +11,8 @@
  * @returns {Number}
  */
 export function executeUpdate(buffer, queryTree, requestor) {
+  if (queryTree.into.type != 'identifier' || queryTree.into.variant != 'table') throw new Error('Unable to perform this update operation');
+
   const table = queryTree.into.name.split('.');
   let schemaName;
   let tableName;
@@ -31,5 +33,87 @@ export function executeUpdate(buffer, queryTree, requestor) {
 
   const columnDefinitions = getColumnDefinitionsByTableObjectId(buffer, tableObjectId);
 
-  
+  const results = buffer.pageScan(rootPageId, queryTree.where, columnDefinitions, []);
+
+  const updatedRows = results.map(row => {
+    return row.map(col => {
+      const updNode = getUpdateNode(col.name, queryTree.set);
+      if (updNode != null) {
+        col.value = computeUpdateValue(updNode, row);
+      }
+
+      return col;
+    });
+  });
+
+  const numRecordsUpdated = buffer.updateRecords(rootPageId, updatedRows, columnDefinitions);
+
+  return numRecordsUpdated;
+}
+
+/**
+ * @function
+ * @param {String} colName 
+ * @param {Array<SqlSetNode>} setNodes
+ * @returns {SqlSetValueNode}
+ */
+function getUpdateNode(colName, setNodes) {
+  setNodes.forEach(node => {
+    if (node.target.type != 'identifier' && node.target.type != 'column') throw new Error('Unable to perform this update operation');
+
+    if (node.target.name.toLowerCase() == colName.toLowerCase()) return node.value;
+  });
+
+  return null;
+}
+
+/**
+ * @function
+ * @param {SqlSetValueNode} node 
+ * @param {Array<ResultCell>} row 
+ */
+function computeUpdateValue(node, row) {
+  if (node.type == 'literal') {
+    let value;
+    switch (node.variant) {
+      case 'decimal':
+        value = Number(node.value);
+        break;
+      case 'text':
+        value = node.value;
+        break;
+      case 'null':
+        value = null;
+        break;
+      default:
+        throw new Error('Invalid update value node variant');
+    }
+
+    return value;
+  } else if (node.type == 'identifier') {
+    const name = node.name;
+    const col = row.find(c => c.name == name);
+
+    if (col == undefined) throw new Error('referenced column not found');
+
+    return col.value;
+  } else if (node.type == 'expression') {
+    if (node.variant != 'operation') throw new Error('Unknown update expression variant');
+
+    const left = computeUpdateValue(node.left, row);
+    const right = computeUpdateValue(node.right, row);
+
+    switch (node.operation) {
+      case '+':
+        return left + right;
+      case '-':
+        return left - right;
+      case '*':
+        return left * right;
+      case '/':
+        return left / right;
+      default:
+        throw new Error('Unsupported update operation');
+    }
+  }
 }

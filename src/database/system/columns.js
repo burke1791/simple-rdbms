@@ -278,6 +278,9 @@ function parseColumnDefinition(resultColumns) {
       case 'is_nullable':
         def.isNullable = !!col.value;
         break;
+      case 'is_primary_key':
+        def.isPrimaryKey = !!col.value;
+        break;
       case 'max_length':
         def.maxLength = isNaN(Number(col.value)) ? col.value : Number(col.value);
         break;

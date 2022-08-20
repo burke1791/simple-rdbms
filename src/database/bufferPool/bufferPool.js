@@ -76,6 +76,27 @@ function BufferPool(maxPageCount) {
 
   /**
    * @method
+   * @param {Number} pageId 
+   * @param {Array<UpdatedRecordType>} updatedRecords 
+   * @param {Array<ColumnDefinition>} columnDefinitions 
+   * @returns {Number}
+   */
+  this.updateRecords = (pageId, updatedRecords, columnDefinitions) => {
+    if (this.pages[pageId] == undefined) {
+      this.loadPageIntoMemory('data', pageId);
+    }
+
+    const page = this.pages[pageId];
+
+    if (getHeaderValue('pageType', page.header) == '2') {
+      throw new Error('Index pages are not supported yet!');
+    } else {
+      return page.updateRecords(updatedRecords, columnDefinitions);
+    }
+  }
+
+  /**
+   * @method
    * @param {Array<ColumnValue>}
    */
   this.executeSystemObjectInsert = (values) => {
