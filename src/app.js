@@ -8,6 +8,7 @@ import { ObjectsPanel } from './panels/objects';
 import { CodeEditor } from './panels/codeEditor';
 import { NOTIF, Pubsub } from './utilities';
 import { Results } from './panels/results';
+import { EditorProvider } from './context/editorContext';
 
 const { Sider, Content } = Layout;
 
@@ -38,7 +39,9 @@ function App() {
           <Layout>
             <Content>
               <Row>
-                <CodeEditor />
+                <EditorProvider>
+                  <CodeEditor />
+                </EditorProvider>
               </Row>
               <Row>
                 <Results />

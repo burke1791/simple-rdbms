@@ -120,12 +120,17 @@ function BufferPool(maxPageCount) {
     return results;
   }
 
-  this.executeSelectQuery = (from, where) => {
+  /**
+   * @function
+   * @param {SqlStatementTree} query
+   * @returns {Array<Array<ResultCell>>}
+   */
+  this.executeSelectQuery = (query) => {
     /*
       Currently allowing single-table queries only
     */
 
-    const table = from.name.split('.');
+    const table = query.from.name.split('.');
     let schemaName;
     let tableName;
 
@@ -143,7 +148,7 @@ function BufferPool(maxPageCount) {
 
     const columnDefinitions = getColumnDefinitionsByTableObjectId(this, tableObjectId);
     
-    const results = this.pageScan(rootPageId, where, columnDefinitions, results);
+    const results = this.pageScan(rootPageId, query.where, columnDefinitions, results);
 
     return results;
   }
@@ -154,14 +159,13 @@ function BufferPool(maxPageCount) {
    * @returns {Array<Array<ResultCell>>}
    */
   this.executeQuery = (query) => {
-    const predicate = query.where || [];
 
     let results;
 
     // assuming a 'statement' type
     switch (query.variant) {
       case 'select':
-        results = this.executeSelectQuery(query.from, predicate);
+        results = this.executeSelectQuery(query);
         break;
       default:
         throw new Error('We only support SELECT queries at the moment');

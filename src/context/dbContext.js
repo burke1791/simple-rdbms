@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import ContextSkeleton from './template';
 
-const dbContext = new ContextSkeleton('dbContext', false);
+const dbContext = new ContextSkeleton({ name: 'dbContext', storageEnabled: false });
 
 const StateContext = createContext();
 const DispatchContext = createContext();

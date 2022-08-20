@@ -4,13 +4,16 @@ import Prism from 'prismjs';
 
 import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 import { useDbDispatch } from '../../context';
+import { useEditorDispatch, useEditorState } from '../../context/editorContext';
 
 function CodeEditor() {
 
   const queryId = useRef(null);
-  const [sql, setSql] = useState('');
   const [sendQueryTrigger, setSendQueryTrigger] = useState(null);
 
+  const { sql } = useEditorState();
+
+  const editorDispatch = useEditorDispatch();
   const dbDispatch = useDbDispatch();
 
   useEffect(() => {
@@ -34,7 +37,7 @@ function CodeEditor() {
   }
 
   const handleChange = (code) => {
-    setSql(code);
+    editorDispatch({ type: 'update', key: 'sql', value: code });
   }
 
   const sendQuery = () => {
@@ -55,15 +58,19 @@ function CodeEditor() {
     if (data.queryId == queryId.current && data.type == 'RESULTS') {
       console.log(data.recordset);
       dbDispatch({ type: 'update', key: 'data', value: data.recordset });
+      dbDispatch({ type: 'update', key: 'error', value: false });
       dbDispatch({ type: 'update', key: 'newData', value: new Date().valueOf() });
     } else if (data.queryId == queryId.current && data.type == 'ERROR') {
-      console.log(error);
+      console.log(data.error);
+      dbDispatch({ type: 'update', key: 'data', value: null });
+      dbDispatch({ type: 'update', key: 'error', value: true });
+      dbDispatch({ type: 'update', key: 'newData', value: new Date().valueOf() });
     }
   }
 
   return (
     <Editor
-      value={sql}
+      value={sql || ''}
       onValueChange={handleChange}
       highlight={code => Prism.highlight(code, Prism.languages.sql, 'sql')}
       padding={10}

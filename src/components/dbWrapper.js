@@ -4,6 +4,7 @@ import { BufferPool } from '../database/bufferPool';
 import { startup } from '../database/server';
 import { NOTIF, Pubsub } from '../utilities';
 import sqliteParser from 'sqlite-parser';
+import { executeQuery } from '../database/queryProcessor';
 
 const buffer = new BufferPool(10);
 
@@ -47,10 +48,8 @@ function DbWrapper(props) {
 
       console.log(queryTree);
 
-      // const queryTree = parser(query.sql);
-      // console.log(queryTree);
+      const records = executeQuery(buffer, queryTree);
 
-      const records = buffer.executeQuery(queryTree);
       const result = {
         queryId: query.id,
         type: 'RESULTS',
@@ -62,7 +61,7 @@ function DbWrapper(props) {
       const result = {
         queryId: query.id,
         type: 'ERROR',
-        error: error.message
+        error: error
       }
       Pubsub.publish(NOTIF.QUERY_RESULT, result);
     }

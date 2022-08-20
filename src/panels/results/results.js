@@ -11,7 +11,7 @@ function Results() {
   const [columns, setColumns] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const { data, newData } = useDbState();
+  const { data, error, newData } = useDbState();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.QUERY, Results, clearResults);
@@ -22,8 +22,10 @@ function Results() {
   }, []);
 
   useEffect(() => {
-    if (newData) {
+    if (newData && !error) {
       populateResults();
+    } else if (error) {
+      setLoading(false);
     }
   }, [newData]);
 
@@ -50,8 +52,6 @@ function Results() {
       return data;
     });
 
-    console.log(resultset);
-
     setResults(resultset);
     setLoading(false);
   }
@@ -59,7 +59,6 @@ function Results() {
   const generateColumns = () => {
     if (data && data.length > 0) {
       const cols = data[0].map(col => {
-        console.log(col);
         return {
           align: 'left',
           dataIndex: col.name,
