@@ -11,6 +11,7 @@ export const columnsTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: true,
     maxLength: null,
     order: 1
   },
@@ -19,6 +20,7 @@ export const columnsTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 2
   },
@@ -27,6 +29,7 @@ export const columnsTableDefinition = [
     dataType: 1,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 3
   },
@@ -35,6 +38,7 @@ export const columnsTableDefinition = [
     dataType: 4,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 4
   },
@@ -43,32 +47,45 @@ export const columnsTableDefinition = [
     dataType: 4,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 5
+  },
+  {
+    name: 'is_primary_key',
+    dataType: 4,
+    isVariable: false,
+    isNullable: true,
+    isPrimaryKey: false,
+    maxLength: null,
+    order: 6
   },
   {
     name: 'max_length',
     dataType: 2,
     isVariable: false,
     isNullable: true,
+    isPrimaryKey: false,
     maxLength: null,
-    order: 6
+    order: 7
   },
   {
     name: 'column_name',
     dataType: 6,
     isVariable: true,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: 128,
-    order: 7
+    order: 8
   },
   {
     name: 'column_order',
     dataType: 1,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
-    order: 8
+    order: 9
   }
 ];
 
@@ -89,7 +106,7 @@ export function initializeColumnsTable(buffer) {
  export function initColumnsTableDefinition(buffer, startingColumnId) {
   let columnId = startingColumnId;
   columnsTableDefinition.forEach((def) => {
-    const values = _getNewColumnInsertValues(columnId, 4, def.dataType, def.isVariable, def.isNullable, def.maxLength, def.name, def.order);
+    const values = _getNewColumnInsertValues(columnId, 4, def.dataType, def.isVariable, def.isNullable, def.isPrimaryKey, def.maxLength, def.name, def.order);
 
     buffer.executeSystemColumnInsert(values);
     columnId++;
@@ -108,7 +125,7 @@ export function initializeColumnsTable(buffer) {
  * @param {Number} columnOrder 
  * @returns
  */
- export function _getNewColumnInsertValues(columnId, parentObjectId, dataType, isVariable, isNullable, maxLength, columnName, columnOrder) {
+ export function _getNewColumnInsertValues(columnId, parentObjectId, dataType, isVariable, isNullable, isPrimaryKey, maxLength, columnName, columnOrder) {
   return [
     {
       name: 'column_id',
@@ -129,6 +146,10 @@ export function initializeColumnsTable(buffer) {
     {
       name: 'is_nullable',
       value: isNullable
+    },
+    {
+      name: 'is_primary_key',
+      value: isPrimaryKey
     },
     {
       name: 'max_length',

@@ -63,13 +63,13 @@ function Results() {
           align: 'left',
           dataIndex: col.name,
           title: <Text code ellipsis>{col.name}</Text>,
-          width: 250,
+          width: 175,
           render: (text) => {
             let value = text;
             if (typeof text == 'boolean') {
               value = text ? 'true' : 'false';
             }
-            return <Text>{value}</Text>;
+            return <Text ellipsis>{value}</Text>;
           }
         };
       });
@@ -89,7 +89,7 @@ function Results() {
       dataSource={results}
       loading={loading}
       size='small'
-      scroll={{ x: true, y: 'calc(50vh - 42px)' }}
+      scroll={{ x: '100%', y: 'calc(50vh - 42px)' }}
       style={{ height: '50vh' }}
     />
   );

@@ -1,14 +1,16 @@
 
 /**
  * @function
+ * Current allowing single-table queries only. Update operations follow these steps:
+ * 1. Select * from the desired table with an optional predicate
+ * 2. Update the deserialized records with their new values
+ * 3. Reserialize the updated records and call buffer.updateRecords
  * @param {BufferPool} buffer
  * @param {SqlStatementTree} queryTree
  * @param {('USER'|'SYSTEM')} requestor
  * @returns {Number}
  */
 export function executeUpdate(buffer, queryTree, requestor) {
-  // Currently allowing single-table queries only
-
   const table = queryTree.into.name.split('.');
   let schemaName;
   let tableName;
@@ -29,5 +31,5 @@ export function executeUpdate(buffer, queryTree, requestor) {
 
   const columnDefinitions = getColumnDefinitionsByTableObjectId(buffer, tableObjectId);
 
-
+  
 }

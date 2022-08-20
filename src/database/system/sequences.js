@@ -9,6 +9,7 @@ export const sequencesTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: true,
     maxLength: null,
     order: 1
   },
@@ -17,6 +18,7 @@ export const sequencesTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 2
   },
@@ -25,6 +27,7 @@ export const sequencesTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: true,
+    isPrimaryKey: false,
     maxLength: null,
     order: 3
   },
@@ -33,6 +36,7 @@ export const sequencesTableDefinition = [
     dataType: 3,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 4
   },
@@ -41,6 +45,7 @@ export const sequencesTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 5
   }
@@ -97,7 +102,7 @@ function initObjectsSequence(buffer) {
  * @param {BufferPool} buffer 
  */
  function initColumnsSequence(buffer) {
-  const insertValues = getNewSequenceInsertValues(4, 4, 13, 21, 1);
+  const insertValues = getNewSequenceInsertValues(4, 4, 13, 22, 1);
 
   buffer.executeSystemSequenceInsert(insertValues);
 }
@@ -109,7 +114,7 @@ function initObjectsSequence(buffer) {
 export function initSequencesTableDefinition(buffer, startingColumnId) {
   let columnId = startingColumnId;
   sequencesTableDefinition.forEach((def) => {
-    const values = _getNewColumnInsertValues(columnId, 3, def.dataType, def.isVariable, def.isNullable, def.maxLength, def.name, def.order);
+    const values = _getNewColumnInsertValues(columnId, 3, def.dataType, def.isVariable, def.isNullable, def.isPrimaryKey, def.maxLength, def.name, def.order);
 
     buffer.executeSystemColumnInsert(values);
     columnId++;

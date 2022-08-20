@@ -10,6 +10,7 @@ export const objectsTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: true,
     maxLength: null,
     order: 1
   },
@@ -18,6 +19,7 @@ export const objectsTableDefinition = [
     dataType: 1,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 2
   },
@@ -26,6 +28,7 @@ export const objectsTableDefinition = [
     dataType: 4,
     isVariable: false,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: null,
     order: 3
   },
@@ -34,6 +37,7 @@ export const objectsTableDefinition = [
     dataType: 6,
     isVariable: true,
     isNullable: true,
+    isPrimaryKey: false,
     maxLength: 128,
     order: 4
   },
@@ -42,6 +46,7 @@ export const objectsTableDefinition = [
     dataType: 6,
     isVariable: true,
     isNullable: false,
+    isPrimaryKey: false,
     maxLength: 128,
     order: 5
   },
@@ -50,6 +55,7 @@ export const objectsTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: true,
+    isPrimaryKey: false,
     maxLength: null,
     order: 6
   },
@@ -58,6 +64,7 @@ export const objectsTableDefinition = [
     dataType: 2,
     isVariable: false,
     isNullable: true,
+    isPrimaryKey: false,
     maxLength: null,
     order: 7
   }
@@ -127,7 +134,7 @@ export function initObjectsTableDefinition(buffer, startingColumnId) {
   let columnId = startingColumnId;
 
   objectsTableDefinition.forEach((def) => {
-    const values = _getNewColumnInsertValues(columnId, 2, def.dataType, def.isVariable, def.isNullable, def.maxLength, def.name, def.order);
+    const values = _getNewColumnInsertValues(columnId, 2, def.dataType, def.isVariable, def.isNullable, def.isPrimaryKey, def.maxLength, def.name, def.order);
 
     buffer.executeSystemColumnInsert(values);
     columnId++;
