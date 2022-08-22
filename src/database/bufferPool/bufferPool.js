@@ -1,12 +1,11 @@
 import { filterResults } from '../queryProcessor';
 import { writePageToDisk, readPageFromDisk } from '../storageEngine';
-import { columnsTableDefinition, getColumnDefinitionsByTableObjectId } from '../system/columns';
-import { getTableObjectByName, objectsTableDefinition } from '../system/objects';
-import { getNextSequenceValue, sequencesTableDefinition } from '../system/sequences';
+import { columnsTableDefinition } from '../system/columns';
+import { objectsTableDefinition } from '../system/objects';
+import { sequencesTableDefinition } from '../system/sequences';
 import { getHeaderValue } from './deserializer';
 import Page from './page';
 import { serializeRecord } from './serializer';
-import sqliteParser from 'sqlite-parser';
 
 /**
  * @class
@@ -29,6 +28,7 @@ function BufferPool(maxPageCount) {
   }
 
   this.flushPageToDisk = (pageId) => {
+    console.log('flushing page: ' + pageId);
     const page = this.pages[pageId];
     const isWritten = writePageToDisk('data', page.data);
 
@@ -41,12 +41,13 @@ function BufferPool(maxPageCount) {
     const pageIds = Object.keys(this.pages);
 
     for (let pageId of pageIds) {
-      const page = this.pages[pageId];
-      const isWritten = writePageToDisk('data', page.data);
+      this.flushPageToDisk(pageId);
+      // const page = this.pages[pageId];
+      // const isWritten = writePageToDisk('data', page.data);
 
-      if (!isWritten) {
-        console.log('Error writing pageId: ' + pageId);
-      }
+      // if (!isWritten) {
+      //   console.log('Error writing pageId: ' + pageId);
+      // }
     }
   }
 
@@ -60,7 +61,6 @@ function BufferPool(maxPageCount) {
    */
   this.pageScan = (pageId, where, columnDefinitions, results = []) => {
     if (this.pages[pageId] == undefined) {
-      console.log('reading page into memory');
       this.loadPageIntoMemory('data', pageId);
     }
 

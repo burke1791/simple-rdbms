@@ -15,6 +15,7 @@ export function writePageToDisk(filename, data) {
   let fileData = data;
 
   if (fileExists(filename)) {
+    console.log('file exists');
     const file = getLocalStorage(filename, JSON.parse);
     const header = data.substring(0, PAGE_HEADER_SIZE);
     const pageId = getHeaderValue('pageId', header);

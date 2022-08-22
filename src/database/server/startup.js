@@ -22,13 +22,13 @@ export function startup(buffer) {
       initSequencesTableDefinition(buffer, 8);
       initColumnsTableDefinition(buffer, 13);
 
-      // seed the databasee with example table(s) and data
+      // seed the database with example data
       createPersonTable(buffer);
 
       buffer.flushAll();
+    } else {
+      buffer.loadPageIntoMemory('data', 1);
     }
-
-    buffer.loadPageIntoMemory('data', 1);
 
     return true;
   } catch (error) {
