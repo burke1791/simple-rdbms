@@ -66,6 +66,8 @@ function BufferPool(maxPageCount) {
 
     const page = this.pages[pageId];
 
+    if (pageId == 4) console.log(page.data);
+
     if (getHeaderValue('pageType', page.header) == '2') {
       throw new Error('Index pages are not supported yet!');
     } else {
@@ -92,7 +94,9 @@ function BufferPool(maxPageCount) {
     if (getHeaderValue('pageType', page.header) == '2') {
       throw new Error('Index pages are not supported yet!');
     } else {
-      return page.updateRecords(updatedRecords, columnDefinitions);
+      const updateCount = page.updateRecords(updatedRecords, columnDefinitions);
+      this.flushPageToDisk(pageId);
+      return updateCount;
     }
   }
 
@@ -122,6 +126,7 @@ function BufferPool(maxPageCount) {
         page.addRecordToPage(serializedRecord);
         recordCount++;
       }
+      this.flushPageToDisk(pageId);
       return recordCount;
     }
   }

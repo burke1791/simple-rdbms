@@ -99,7 +99,7 @@ function Page() {
   this.updateSlotArray = (slotArrIndex, newValue) => {
     const slotArr = this.slotArray.match(/[\s\S]{1,4}/g) || [];
 
-    slotArr[slotArr.length - 1 + slotArrIndex] = padNumber(newValue, 4);
+    slotArr[slotArrIndex] = padNumber(newValue, 4);
     this.slotArray = slotArr.join('');
   }
 
@@ -139,7 +139,7 @@ function Page() {
             if (!this.hasAvailableSpace(upd.serializedRecord)) throw new Error('Not enough space on the page to perform update');
 
             const newRecordIndex = this.firstFreeData;
-            const allRecordData = this.data.substring(PAGE_HEADER_SIZE, newRecordIndex) + recordData;
+            const allRecordData = this.data.substring(PAGE_HEADER_SIZE, newRecordIndex) + upd.serializedRecord;
 
             this.firstFreeData = allRecordData.length + PAGE_HEADER_SIZE;
 
@@ -148,6 +148,10 @@ function Page() {
             ];
             this.header = updatePageHeader(1, headerChanges, this.header);
             this.updateSlotArray(i, newRecordIndex);
+            
+            const before = this.data.substring(0, newRecordIndex);
+            const after = this.data.substring(newRecordIndex + upd.serializedRecord.length);
+            this.data = `${before}${upd.serializedRecord}${after}`;
           }
         }
       }

@@ -24,7 +24,7 @@ function DbWrapper(props) {
   }, []);
 
   const startDbServer = () => {
-    clearLocalStorage();
+    // clearLocalStorage();
     startup(buffer);
     dbDispatch({ type: 'update', key: 'connected', value: true });
   }
@@ -32,8 +32,6 @@ function DbWrapper(props) {
   const processQuery = (query) => {
     console.log('received query: ');
     console.log(query);
-
-    console.log(buffer.pages[1]);
 
     try {
       const tree = sqliteParser(query.sql);
