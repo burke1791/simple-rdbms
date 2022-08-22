@@ -66,8 +66,6 @@ function BufferPool(maxPageCount) {
 
     const page = this.pages[pageId];
 
-    if (pageId == 4) console.log(page.data);
-
     if (getHeaderValue('pageType', page.header) == '2') {
       throw new Error('Index pages are not supported yet!');
     } else {

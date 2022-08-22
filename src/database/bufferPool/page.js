@@ -101,6 +101,10 @@ function Page() {
 
     slotArr[slotArrIndex] = padNumber(newValue, 4);
     this.slotArray = slotArr.join('');
+
+    const before = this.data.substring(0, PAGE_SIZE - this.slotArray.length);
+    this.data = `${before}${this.slotArray}`;
+    console.log(this.data.length);
   }
 
   /**
