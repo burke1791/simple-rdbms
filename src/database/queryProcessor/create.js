@@ -142,6 +142,8 @@ function parseDefinitionNode(node) {
     default:
       throw new Error('Unsupported data type');
   }
+
+  return def;
 }
 
 /**
@@ -165,4 +167,16 @@ function parseConstraints(def, node) {
       }
     }
   });
+}
+
+/**
+ * @function
+ * @param {SqlDefinitionArgNode}
+ */
+function parseColumnLength(arg) {
+  if (arg.type == 'expression' && arg.expression[0].type == 'literal') {
+    return +arg.expression[0].value;
+  } else {
+    throw new Error('Unsupported column definition arg');
+  }
 }

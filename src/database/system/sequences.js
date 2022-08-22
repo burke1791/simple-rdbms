@@ -172,7 +172,9 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
   const resultset = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
 
   if (resultset.length > 1) {
-    throw new Error('getNextSequenceValue: returned more than one result for schema: ' + schema_name + ' and object: ' + table_name);
+    console.log(resultset);
+    console.log(predicate);
+    throw new Error('getNextSequenceValue: returned more than one result for schema: ' + predicate);
   }
 
   const sequenceId = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_id').value);
@@ -188,7 +190,6 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
   const updTree = sqliteParser(query);
 
   const rowCount = executeUpdate(buffer, updTree.statement[0], 'SYSTEM');
-  console.log('update count: ' + rowCount);
 
   return nextSequenceValue;
 }

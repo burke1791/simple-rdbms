@@ -60,6 +60,7 @@ function BufferPool(maxPageCount) {
    */
   this.pageScan = (pageId, where, columnDefinitions, results = []) => {
     if (this.pages[pageId] == undefined) {
+      console.log('reading page into memory');
       this.loadPageIntoMemory('data', pageId);
     }
 

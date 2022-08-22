@@ -21,7 +21,8 @@
  */
 function evaluateRow(row, where) {
   for (let node of where) {
-    if (!evaluateSubtree(row, node)) return false;
+    const isFiltered = evaluateSubtree(row, node);
+    if (!isFiltered) return false;
   }
   return true;
 }
@@ -65,6 +66,13 @@ function evaluateSubtree(row, tree) {
     const left = evaluateSubtree(row, tree.left);
     const right = evaluateSubtree(row, tree.right);
 
-    return left == right;
+    switch (tree.operation) {
+      case 'and':
+        return left && right;
+      case '=':
+        return left == right;
+      default:
+        throw new Error('Unsupported predicate operation');
+    }
   }
 }

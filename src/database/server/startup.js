@@ -22,10 +22,10 @@ export function startup(buffer) {
       initSequencesTableDefinition(buffer, 8);
       initColumnsTableDefinition(buffer, 13);
 
-      buffer.flushAll();
-
       // seed the databasee with example table(s) and data
       createPersonTable(buffer);
+
+      buffer.flushAll();
     }
 
     buffer.loadPageIntoMemory('data', 1);

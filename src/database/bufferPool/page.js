@@ -124,17 +124,13 @@ function Page() {
       const record = deserializeRecord(recordIndex, this.data, columnDefinitions);
       const existingSerializedRecord = serializeRecord(record, columnDefinitions);
 
-      console.log(record);
-
       for (let upd of updatedRecords) {
-        console.log(upd);
         const pk = record.find(col => col.name == upd.primaryKeyName);
 
         if (pk.value == upd.primaryKeyValue) {
           updateCount++;
           if (upd.serializedRecord.length <= existingSerializedRecord.length) {
             // update in place
-            console.log('updating in place');
             const before = this.data.substring(0, recordIndex);
             const after = this.data.substring(recordIndex + upd.serializedRecord.length);
             this.data = `${before}${upd.serializedRecord}${after}`;

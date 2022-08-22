@@ -33,6 +33,8 @@ function DbWrapper(props) {
     console.log('received query: ');
     console.log(query);
 
+    console.log(buffer.pages[1]);
+
     try {
       const tree = sqliteParser(query.sql);
       console.log(tree);

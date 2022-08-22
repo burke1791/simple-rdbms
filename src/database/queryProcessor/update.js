@@ -1,3 +1,4 @@
+import { serializeRecord } from '../bufferPool/serializer';
 import { getColumnDefinitionsByTableObjectId, getTableObjectByName } from '../system';
 
 /**
@@ -33,6 +34,7 @@ export function executeUpdate(buffer, queryTree, requestor) {
   const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;
 
   const columnDefinitions = getColumnDefinitionsByTableObjectId(buffer, tableObjectId);
+  const pkName = columnDefinitions.find(def => def.isPrimaryKey).name;
 
   const results = buffer.pageScan(rootPageId, queryTree.where, columnDefinitions, []);
 
@@ -47,9 +49,16 @@ export function executeUpdate(buffer, queryTree, requestor) {
     });
   });
 
-  console.log(updatedRows);
+  const updatedRecords = updatedRows.map(row => {
+    const pk = row.find(col => col.name == pkName);
+    return {
+      primaryKeyName: pkName,
+      primaryKeyValue: pk.value,
+      serializedRecord: serializeRecord(row, columnDefinitions)
+    };
+  });
 
-  const numRecordsUpdated = buffer.updateRecords(rootPageId, updatedRows, columnDefinitions);
+  const numRecordsUpdated = buffer.updateRecords(rootPageId, updatedRecords, columnDefinitions);
 
   return numRecordsUpdated;
 }
