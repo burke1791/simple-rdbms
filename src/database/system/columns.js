@@ -2,7 +2,7 @@ import { BufferPool } from '../bufferPool';
 import { generateBlankPage } from '../bufferPool/serializer';
 import { writePageToDisk } from '../storageEngine';
 import { getTableObjectByName } from './objects';
-import { getNextSequenceValue } from './sequences';
+import { getNextSequenceValue, sequencesTableDefinition } from './sequences';
 import sqliteParser from 'sqlite-parser';
 
 export const columnsTableDefinition = [
@@ -253,7 +253,7 @@ export function getColumnDefinitionsByTableObjectId(buffer, tableObjectId) {
   const columnDefinitions = [];
 
   resultSet.forEach(row => {
-    columnDefinitions.push(parseColumnDefinition(row));
+    columnDefinitions.push(parseColumnDefinition(buffer, row));
   });
 
   return columnDefinitions;
@@ -261,14 +261,44 @@ export function getColumnDefinitionsByTableObjectId(buffer, tableObjectId) {
 
 /**
  * @function
+ * @param {BufferPool} buffer 
  * @param {Array<ResultCell>} resultColumns 
  * @returns {ColumnDefinition}
  */
-function parseColumnDefinition(resultColumns) {
-  const def = {};
+function parseColumnDefinition(buffer, resultColumns) {
+  const def = {
+    autoIncrement: false
+  };
+
+  // /**
+  //  * @todo refactor this functionality to use a joined query
+  //  */
+
+  const objectId = resultColumns.find(col => col.name == 'parent_object_id').value;
+  const columnId = resultColumns.find(col => col.name == 'column_id').value;
+
+  const query = `
+    Select  *
+    From sys.sequences
+    Where object_id = ${objectId}
+      And column_id = ${columnId}
+  `;
+  const tree = sqliteParser(query);
+  const predicate = tree.statement[0].where;
+
+  const sequences = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
+
+  if (sequences.length > 1) throw new Error('Too many sequences for object_id/column_id pair');
+
+  if (sequences.length == 1) {
+    def.autoIncrement = true;
+  }
 
   resultColumns.forEach(col => {
     switch (col.name) {
+      case 'column_id':
+        def.columnId = Number(col.value);
+        break;
       case 'data_type':
         def.dataType = Number(col.value);
         break;

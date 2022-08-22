@@ -2,7 +2,7 @@ import { filterResults } from '../queryProcessor';
 import { writePageToDisk, readPageFromDisk } from '../storageEngine';
 import { columnsTableDefinition, getColumnDefinitionsByTableObjectId } from '../system/columns';
 import { getTableObjectByName, objectsTableDefinition } from '../system/objects';
-import { sequencesTableDefinition } from '../system/sequences';
+import { getNextSequenceValue, sequencesTableDefinition } from '../system/sequences';
 import { getHeaderValue } from './deserializer';
 import Page from './page';
 import { serializeRecord } from './serializer';
@@ -93,6 +93,36 @@ function BufferPool(maxPageCount) {
       throw new Error('Index pages are not supported yet!');
     } else {
       return page.updateRecords(updatedRecords, columnDefinitions);
+    }
+  }
+
+  /**
+   * @method
+   * @param {Number} pageId 
+   * @param {Array<Array<ColumnValue>>} updatedRecords 
+   * @param {Array<ColumnDefinition>} columnDefinitions 
+   * @returns {Number}
+   */
+  this.insertRecords = (pageId, newRecords, columnDefinitions) => {
+    console.log(newRecords);
+    console.log(columnDefinitions);
+    if (this.pages[pageId] == undefined) {
+      this.loadPageIntoMemory('data', pageId);
+    }
+
+    const page = this.pages[pageId];
+
+    if (getHeaderValue('pageType', page.header) == '2') {
+      throw new Error('Index pages are not supported yet!');
+    } else {
+      let recordCount = 0;
+      
+      for (let row of newRecords) {
+        const serializedRecord = serializeRecord(row, columnDefinitions);
+        page.addRecordToPage(serializedRecord);
+        recordCount++;
+      }
+      return recordCount;
     }
   }
 
