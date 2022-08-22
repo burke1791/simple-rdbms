@@ -1,4 +1,5 @@
 import { BufferPool } from '../bufferPool';
+import { executeCreate } from './create';
 import { executeSelect } from './select';
 
 /**
@@ -14,6 +15,8 @@ export function executeQuery(buffer, queryTree) {
     case 'select':
       results = executeSelect(buffer, queryTree);
       break;
+    case 'create':
+      results = executeCreate(buffer, queryTree);
     default:
       throw new Error('This app only supports SELECT queries at the moment');
   }

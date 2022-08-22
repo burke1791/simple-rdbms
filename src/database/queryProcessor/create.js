@@ -1,6 +1,6 @@
 import { generateBlankPage } from "../bufferPool/serializer";
 import { writePageToDisk } from "../storageEngine";
-import { getNextSequenceValue, _getNewObjectInsertValues } from "../system";
+import { getNewSequenceInsertValues, getNextSequenceValue, _getNewColumnInsertValues, _getNewObjectInsertValues } from "../system";
 
 /**
  * @function
@@ -66,10 +66,103 @@ function createTable(buffer, queryTree) {
   buffer.executeSystemObjectInsert(newObjValues);
 
   // Step 3
+  const definitions = generateColumnDefinitions(queryTree.definition);
 
+  definitions.forEach(def => {
+    const columnId = getNextSequenceValue(buffer, 4, 13);
+    const values = _getNewColumnInsertValues(columnId, objectId, def.dataType, def.isVariable, def.isNullable, def.isPrimaryKey, def.maxLength, def.name, def.order);
+    buffer.executeSystemColumnInsert(values);
+
+    // Step 4
+    if (def?.autoIncrement) {
+      const seqId = getNextSequenceValue(buffer, 3, 8);
+      const seqValues = getNewSequenceInsertValues(seqId, objectId, columnId, 1, 1);
+      buffer.executeSystemSequenceInsert(seqValues);
+    }
+  });
 }
 
 /**
  * @function
+ * @param {Array<SqlDefinitionNode>} definitions
+ * @returns {Array<ColumnDefinition>}
  */
-function generateColumnDefinitions()
+function generateColumnDefinitions(definitions) {
+  return definitions.map((def, idx) => {
+    const colDef = parseDefinitionNode(def);
+    colDef.order = idx + 1;
+
+    return colDef;
+  });
+}
+
+/**
+ * @function
+ * @param {SqlDefinitionNode} node
+ * @returns {ColumnDefinition}
+ */
+function parseDefinitionNode(node) {
+  if (node.type != 'definition' || node.variant != 'column') throw new Error('Cannot parse definition');
+
+  const def = {
+    name: node.name,
+    isVariable: false,
+    isNullable: true,
+    isPrimaryKey: false,
+    maxLength: null
+  };
+
+  parseConstraints(def, node);
+
+  switch (node.datatype.variant) {
+    case 'tinyint':
+      def.dataType = 0;
+      break;
+    case 'smallint':
+      def.dataType = 1;
+      break;
+    case 'int':
+      def.dataType = 2;
+      break;
+    case 'bigint':
+      def.dataType = 3;
+      break;
+    case 'bit':
+      def.dataType = 4;
+      break;
+    case 'char':
+      def.dataType = 5;
+      def.maxLength = parseColumnLength(node.datatype.args);
+      break;
+    case 'varchar':
+      def.dataType = 6;
+      def.isVariable = true;
+      def.maxLength = parseColumnLength(node.datatype.args);
+      break;
+    default:
+      throw new Error('Unsupported data type');
+  }
+}
+
+/**
+ * @function
+ * @param {ColumnDefinition} def 
+ * @param {SqlDefinitionNode} node 
+ */
+function parseConstraints(def, node) {
+  node.definition.forEach(colDef => {
+    if (colDef.type == 'constraint') {
+      switch (colDef.variant) {
+        case 'not null':
+          def.isNullable = false;
+          break;
+        case 'primary key':
+          def.isPrimaryKey = true;
+          def.autoIncrement = !!colDef?.autoIncrement;
+          break;
+        default:
+          throw new Error('Unsupported constraint');
+      }
+    }
+  });
+}

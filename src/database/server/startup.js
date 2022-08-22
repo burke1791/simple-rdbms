@@ -25,7 +25,7 @@ export function startup(buffer) {
       buffer.flushAll();
 
       // seed the databasee with example table(s) and data
-      // createPersonTable(buffer);
+      createPersonTable(buffer);
     }
 
     buffer.loadPageIntoMemory('data', 1);

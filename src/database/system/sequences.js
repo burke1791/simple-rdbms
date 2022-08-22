@@ -123,7 +123,7 @@ export function initSequencesTableDefinition(buffer, startingColumnId) {
   });
 }
 
-function getNewSequenceInsertValues(sequenceId, objectId, columnId, nextSequenceValue, sequenceIncrement) {
+export function getNewSequenceInsertValues(sequenceId, objectId, columnId, nextSequenceValue, sequenceIncrement) {
   return [
     {
       name: 'sequence_id',
@@ -171,7 +171,7 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
 
   const resultset = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
 
-  if (resultSet.length > 1) {
+  if (resultset.length > 1) {
     throw new Error('getNextSequenceValue: returned more than one result for schema: ' + schema_name + ' and object: ' + table_name);
   }
 
@@ -180,7 +180,7 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
   const seqIncrement = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_increment').value);
 
   query = `
-    Update sys.objects
+    Update sys.sequences
     Set next_sequence_value = next_sequence_value + sequence_increment
     Where sequence_id = ${sequenceId}
   `;

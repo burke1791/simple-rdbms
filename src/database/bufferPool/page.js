@@ -124,7 +124,10 @@ function Page() {
       const record = deserializeRecord(recordIndex, this.data, columnDefinitions);
       const existingSerializedRecord = serializeRecord(record, columnDefinitions);
 
+      console.log(record);
+
       for (let upd of updatedRecords) {
+        console.log(upd);
         const pk = record.find(col => col.name == upd.primaryKeyName);
 
         if (pk.value == upd.primaryKeyValue) {

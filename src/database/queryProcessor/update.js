@@ -1,3 +1,4 @@
+import { getColumnDefinitionsByTableObjectId, getTableObjectByName } from '../system';
 
 /**
  * @function
@@ -46,6 +47,8 @@ export function executeUpdate(buffer, queryTree, requestor) {
     });
   });
 
+  console.log(updatedRows);
+
   const numRecordsUpdated = buffer.updateRecords(rootPageId, updatedRows, columnDefinitions);
 
   return numRecordsUpdated;
@@ -58,11 +61,11 @@ export function executeUpdate(buffer, queryTree, requestor) {
  * @returns {SqlSetValueNode}
  */
 function getUpdateNode(colName, setNodes) {
-  setNodes.forEach(node => {
+  for (let node of setNodes) {
     if (node.target.type != 'identifier' && node.target.type != 'column') throw new Error('Unable to perform this update operation');
 
     if (node.target.name.toLowerCase() == colName.toLowerCase()) return node.value;
-  });
+  }
 
   return null;
 }
@@ -105,13 +108,13 @@ function computeUpdateValue(node, row) {
 
     switch (node.operation) {
       case '+':
-        return left + right;
+        return +left + +right;
       case '-':
-        return left - right;
+        return +left - +right;
       case '*':
-        return left * right;
+        return +left * +right;
       case '/':
-        return left / right;
+        return +left / +right;
       default:
         throw new Error('Unsupported update operation');
     }
