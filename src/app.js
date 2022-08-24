@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { Layout, Row } from 'antd';
 import 'antd/dist/antd.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { DbProvider } from './context';
 import DbWrapper from './components/dbWrapper';
-import { ObjectsPanel } from './panels/objects';
-import { CodeEditor } from './panels/codeEditor';
 import { NOTIF, Pubsub } from './utilities';
-import { Results } from './panels/results';
-import { EditorProvider } from './context/editorContext';
+import IDE from './pages/ide';
+import PageViewer from './pages/pageViewer';
 
 const { Sider, Content } = Layout;
 
@@ -33,21 +32,12 @@ function App() {
     <DbProvider>
       <DbWrapper>
         <Layout style={{ height: '100vh' }}>
-          <Sider>
-            <ObjectsPanel />
-          </Sider>
-          <Layout>
-            <Content>
-              <Row>
-                <EditorProvider>
-                  <CodeEditor />
-                </EditorProvider>
-              </Row>
-              <Row>
-                <Results />
-              </Row>
-            </Content>
-          </Layout>
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<IDE />} />
+              <Route path='/viewer' element={<PageViewer />} />
+            </Routes>
+          </BrowserRouter>
         </Layout>
       </DbWrapper>
     </DbProvider>
