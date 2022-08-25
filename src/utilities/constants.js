@@ -8,3 +8,8 @@ export const QUERY_TYPE = {
   USER: 'USER',
   BACKGROUND: 'BACKGROUND'
 };
+
+export const VIEW_MODE = {
+  PAGE_VIEWER: 'PAGE_VIEWER',
+  CODE_EDITOR: 'CODE_EDITOR'
+};

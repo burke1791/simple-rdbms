@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography } from 'antd';
-import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
-import { useDbState } from '../../context';
+import { NOTIF, Pubsub, QUERY_TYPE, VIEW_MODE } from '../../utilities';
+import { useDbDispatch, useDbState } from '../../context';
 
 const { Text } = Typography;
 
@@ -12,6 +12,7 @@ function Results() {
   const [loading, setLoading] = useState(false);
 
   const { data, error, newData } = useDbState();
+  const dbDispatch = useDbDispatch();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.QUERY, Results, clearResults);
@@ -91,6 +92,13 @@ function Results() {
       size='small'
       scroll={{ x: '100%', y: 'calc(50vh - 42px)' }}
       style={{ height: '50vh' }}
+      onRow={(record) => {
+        return {
+          onClick: (event) => {
+            dbDispatch({ type: 'update', key: 'viewMode', value: VIEW_MODE.PAGE_VIEWER });
+          }
+        }
+      }}
     />
   );
 }
