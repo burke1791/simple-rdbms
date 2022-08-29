@@ -1,0 +1,1 @@
+export { default as DataPageView } from './dataPageView';

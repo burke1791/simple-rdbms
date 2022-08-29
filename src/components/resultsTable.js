@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography } from 'antd';
-import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
-import { useDbState } from '../../context';
-import { useNavigate } from 'react-router-dom';
-import ResultsTable from '../../components/resultsTable';
+import { useDbState } from '../context';
+import { NOTIF, Pubsub, QUERY_TYPE } from '../utilities';
 
 const { Text } = Typography;
 
-function Results({ tableScroll = null }) {
+/**
+ * @typedef ResultsTableProps
+ * @property {String} [rowClassName]
+ * @property {Object} [scroll]
+ * @property {Object} [style]
+ * @property {Function} [onRowClick]
+ */
+
+/**
+ * @component
+ * @param {ResultsTableProps} props 
+ */
+function ResultsTable(props) {
 
   const [results, setResults] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -15,13 +25,11 @@ function Results({ tableScroll = null }) {
 
   const { data, error, newData } = useDbState();
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    Pubsub.subscribe(NOTIF.QUERY, Results, clearResults);
+    Pubsub.subscribe(NOTIF.QUERY, ResultsTable, clearResults);
 
     return (() => {
-      Pubsub.unsubscribe(NOTIF.QUERY, Results);
+      Pubsub.unsubscribe(NOTIF.QUERY, ResultsTable);
     })
   }, []);
 
@@ -84,36 +92,25 @@ function Results({ tableScroll = null }) {
     }
   }
 
-  // return (
-  //   <Table
-  //     bordered
-  //     pagination={false}
-  //     rowKey='_recordNum'
-  //     rowClassName='pointer'
-  //     columns={columns}
-  //     dataSource={results}
-  //     loading={loading}
-  //     size='small'
-  //     scroll={ tableScroll || { x: '100%', y: 'calc(50vh - 42px)' }}
-  //     style={{ height: '50vh' }}
-  //     onRow={(record) => {
-  //       return {
-  //         onClick: (event) => {
-  //           navigate('/data-page');
-  //         }
-  //       }
-  //     }}
-  //   />
-  // );
-
   return (
-    <ResultsTable
-      rowClassName='pointer'
-      scroll={{ x: '100%', y: 'calc(50vh - 42px)' }}
-      style={{ height: '50vh' }}
-      onRowClick={() => navigate('/data-page')}
+    <Table
+      bordered
+      pagination={false}
+      rowKey='_recordNum'
+      rowClassName={props.rowClassName}
+      columns={columns}
+      dataSource={results}
+      loading={loading}
+      size='small'
+      scroll={props.scroll}
+      style={props.style}
+      onRow={(record) => {
+        return {
+          onClick: props.onRowClick
+        }
+      }}
     />
   );
 }
 
-export default Results;
+export default ResultsTable;

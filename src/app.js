@@ -5,6 +5,7 @@ import { DbProvider } from './context';
 import DbWrapper from './components/dbWrapper';
 import { NOTIF, Pubsub } from './utilities';
 import Main from './components/main';
+import './app.css';
 
 function App() {
 

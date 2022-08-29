@@ -78,6 +78,21 @@ function BufferPool(maxPageCount) {
   /**
    * @method
    * @param {Number} pageId 
+   * @returns {String}
+   */
+  this.getPageData = (pageId) => {
+    if (this.pages[pageId] == undefined) {
+      this.loadPageIntoMemory('data', pageId);
+    }
+
+    const data = this.pages[pageId].data;
+
+    return data;
+  }
+
+  /**
+   * @method
+   * @param {Number} pageId 
    * @param {Array<UpdatedRecordType>} updatedRecords 
    * @param {Array<ColumnDefinition>} columnDefinitions 
    * @returns {Number}
