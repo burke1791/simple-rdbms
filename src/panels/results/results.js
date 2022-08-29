@@ -84,28 +84,6 @@ function Results({ tableScroll = null }) {
     }
   }
 
-  // return (
-  //   <Table
-  //     bordered
-  //     pagination={false}
-  //     rowKey='_recordNum'
-  //     rowClassName='pointer'
-  //     columns={columns}
-  //     dataSource={results}
-  //     loading={loading}
-  //     size='small'
-  //     scroll={ tableScroll || { x: '100%', y: 'calc(50vh - 42px)' }}
-  //     style={{ height: '50vh' }}
-  //     onRow={(record) => {
-  //       return {
-  //         onClick: (event) => {
-  //           navigate('/data-page');
-  //         }
-  //       }
-  //     }}
-  //   />
-  // );
-
   return (
     <ResultsTable
       rowClassName='pointer'

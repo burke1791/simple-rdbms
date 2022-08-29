@@ -106,7 +106,7 @@ function ResultsTable(props) {
       style={props.style}
       onRow={(record) => {
         return {
-          onClick: props.onRowClick
+          onClick: props.onRowClick || (() => null)
         }
       }}
     />
