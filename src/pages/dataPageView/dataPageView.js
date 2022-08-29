@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button, Col, Layout, Row } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDbDispatch, useDbState } from '../../context';
-import { Results } from '../../panels/results';
+import ResultsTable from '../../components/resultsTable';
 
 const { Content, Header } = Layout;
 
@@ -40,7 +40,7 @@ function DataPageView() {
 
         </Col>
         <Col span={12}>
-          <Results scroll={{ x: '100%', y: '100%' }} />
+          <ResultsTable scroll={{ x: '100%', y: '100%' }} />
         </Col>
       </Row>
     </Content>
