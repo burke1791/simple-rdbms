@@ -1,6 +1,5 @@
 import { BufferPool } from '../bufferPool';
 import { getColumnDefinitionsByTableObjectId, getTableObjectByName } from '../system';
-import { filterResults } from './where';
 
 /**
  * @function

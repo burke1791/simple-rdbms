@@ -67,7 +67,6 @@ function Page() {
   /**
    * @method
    * @param {Array<ColumnDefinition>} columnDefinitions
-   * @returns {Array<Array<ResultCell>>}
    */
   this.readPage = (columnDefinitions) => {
     const records = [];
@@ -76,6 +75,27 @@ function Page() {
     for (let i = slotArr.length - 1; i >= 0; i--) {
       let recordIndex = Number(slotArr[i]);
       records.push(deserializeRecord(recordIndex, this.data, columnDefinitions));
+    }
+
+    return records;
+  }
+
+  /**
+   * @method
+   * @param {Array<ColumnDefinition>} columnDefinitions
+   * @returns {Array<DataRecord>}
+   */
+  this.scan = (columnDefinitions) => {
+    const records = [];
+
+    const slotArr = this.slotArray.match(/[\s\S]{1,4}/g) || [];
+    for (let i = slotArr.length - 1; i >= 0; i--) {
+      let recordIndex = Number(slotArr[i]);
+      const record = {
+        columns: deserializeRecord(recordIndex, this.data, columnDefinitions),
+        __page_id: getHeaderValue('pageId', this.header)
+      }
+      records.push(record);
     }
 
     return records;

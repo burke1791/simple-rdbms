@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDbDispatch, useDbState } from '../context';
+import { useDbConnectionDispatch, useDbDispatch, useDbState } from '../context';
 import { BufferPool } from '../database/bufferPool';
 import { startup } from '../database/server';
 import { clearLocalStorage, NOTIF, Pubsub } from '../utilities';
@@ -11,6 +11,7 @@ const buffer = new BufferPool(10);
 function DbWrapper(props) {
 
   const dbDispatch = useDbDispatch();
+  const dbConnectionDispatch = useDbConnectionDispatch();
 
   const { pageIdRequest, pageIdRequestTrigger } = useDbState();
 
@@ -20,7 +21,7 @@ function DbWrapper(props) {
     startDbServer();
 
     return (() => {
-      dbDispatch({ type: 'update', key: 'connected', value: false });
+      dbConnectionDispatch({ type: 'update', key: 'connected', value: false });
       Pubsub.unsubscribe(NOTIF.QUERY, DbWrapper);
     });
   }, []);
@@ -34,7 +35,7 @@ function DbWrapper(props) {
   const startDbServer = () => {
     // clearLocalStorage();
     startup(buffer);
-    dbDispatch({ type: 'update', key: 'connected', value: true });
+    dbConnectionDispatch({ type: 'update', key: 'connected', value: true });
   }
 
   const getPageData = () => {

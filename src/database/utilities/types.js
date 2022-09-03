@@ -3,11 +3,18 @@
  * @typedef ColumnValue
  * @property {String} name
  * @property {(String|Number|Boolean)} value
+ * @property {Number} [order]
  */
 
 /**
  * @typedef Record
  * @property {Array<ColumnValue>}
+ */
+
+/**
+ * @typedef DataRecord
+ * @property {Array<ColumnValue>} columns
+ * @property {Number} __page_id
  */
 
 /**

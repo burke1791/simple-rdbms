@@ -2,14 +2,13 @@ import React, { createContext, useContext, useReducer } from 'react';
 import { getLocalStorage } from '../utilities';
 import ContextSkeleton from './template';
 
-const dbContext = new ContextSkeleton({ name: 'dbContext', storageEnabled: true });
+const dbContext = new ContextSkeleton({ name: 'dbConnectionContext', storageEnabled: true });
 
 const StateContext = createContext();
 const DispatchContext = createContext();
 
-function DbProvider({ children }) {
-  const initialState = getLocalStorage('dbContext', JSON.parse) || {};
-  const [state, dispatch] = useReducer(dbContext.contextReducer, initialState);
+function DbConnectionProvider({ children }) {
+  const [state, dispatch] = useReducer(dbContext.contextReducer, {});
 
   return (
     <StateContext.Provider value={state}>
@@ -20,20 +19,20 @@ function DbProvider({ children }) {
   );
 }
 
-function useDbState() {
+function useDbConnectionState() {
   const context = useContext(StateContext);
   if (context === undefined) {
-    throw new Error('useDbState must be used within a DbProvider');
+    throw new Error('useDbState must be used within a DbConnectionProvider');
   }
   return context;
 }
 
-function useDbDispatch() {
+function useDbConnectionDispatch() {
   const context = useContext(DispatchContext);
   if (context === undefined) {
-    throw new Error('useDbDispatch must be used within a DbProvider');
+    throw new Error('useDbDispatch must be used within a DbConnectionProvider');
   }
   return context;
 }
 
-export { DbProvider, useDbState, useDbDispatch };
+export { DbConnectionProvider, useDbConnectionState, useDbConnectionDispatch };

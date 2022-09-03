@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Layout } from 'antd';
 import 'antd/dist/antd.css';
-import { DbProvider } from './context';
+import { DbConnectionProvider, DbProvider } from './context';
 import DbWrapper from './components/dbWrapper';
 import { NOTIF, Pubsub } from './utilities';
 import Main from './components/main';
@@ -25,13 +25,15 @@ function App() {
   }
 
   return (
-    <DbProvider>
-      <DbWrapper>
-        <Layout style={{ height: '100vh' }}>
-          <Main />
-        </Layout>
-      </DbWrapper>
-    </DbProvider>
+    <DbConnectionProvider>
+      <DbProvider>
+        <DbWrapper>
+          <Layout style={{ height: '100vh' }}>
+            <Main />
+          </Layout>
+        </DbWrapper>
+      </DbProvider>
+    </DbConnectionProvider>
   );
 }
 

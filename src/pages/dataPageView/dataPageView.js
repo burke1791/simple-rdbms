@@ -21,7 +21,7 @@ function DataPageView() {
 
   useEffect(() => {
     if (pageDataTrigger) {
-      console.log(pageData);
+      // console.log(pageData);
     }
   }, [pageDataTrigger]);
 

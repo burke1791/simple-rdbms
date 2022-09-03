@@ -1,15 +1,15 @@
 
 /**
  * @function
- * @param {Array<Array<ResultCell>>} results 
+ * @param {Array<DataRecord>} results 
  * @param {Array<SqlWhereNode>} where
- * @returns {Array<Array<ResultCell>>}
+ * @returns {Array<DataRecord>}
  */
  export function filterResults(results, where) {
   if (!where || where.length == 0) return results;
 
   return results.filter(row => {
-    return evaluateRow(row, where);
+    return evaluateRow(row.columns, where);
   });
 }
 

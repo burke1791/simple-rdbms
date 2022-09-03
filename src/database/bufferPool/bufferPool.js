@@ -69,7 +69,8 @@ function BufferPool(maxPageCount) {
     if (getHeaderValue('pageType', page.header) == '2') {
       throw new Error('Index pages are not supported yet!');
     } else {
-      results.push(...page.readPage(columnDefinitions));
+      // results.push(...page.readPage(columnDefinitions));
+      results.push(...page.scan(columnDefinitions));
       const filteredResults = filterResults(results, where);
       return filteredResults;
     }

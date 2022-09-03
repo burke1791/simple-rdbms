@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Menu } from 'antd';
 import { TableOutlined } from '@ant-design/icons';
-import { useDbState } from '../../context';
+import { useDbConnectionState } from '../../context';
 import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 
 function ObjectsPanel(props) {
@@ -9,7 +9,7 @@ function ObjectsPanel(props) {
   const queryId = useRef(null);
   const [tables, setTables] = useState([]);
 
-  const { connected } = useDbState();
+  const { connected } = useDbConnectionState();
 
   useEffect(() => {
     if (connected) {
