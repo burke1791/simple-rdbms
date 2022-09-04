@@ -84,6 +84,14 @@ function ResultsTable(props) {
               value = text ? 'true' : 'false';
             }
             return <Text ellipsis>{value}</Text>;
+          },
+          onCell: (record) => {
+
+            return {
+              onMouseEnter: () => {
+                // console.log(record);
+              }
+            };
           }
         };
       });

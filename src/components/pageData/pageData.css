@@ -1,0 +1,16 @@
+.char-data {
+  font-family: monospace;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: #030852;
+}
+
+.char-data-container {
+  margin: 12px 8px;
+  border: 1px solid #030852;
+  border-radius: 5px;
+  background-color: #d6e4ff;
+  padding: 5px;
+  width: '100%';
+  overflow-y: scroll;
+}

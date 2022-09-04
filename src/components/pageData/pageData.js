@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDbDispatch, useDbState } from '../../context';
+import './pageData.css';
 
 function PageData(props) {
 
@@ -12,8 +13,16 @@ function PageData(props) {
     }
   }, [pageDataTrigger]);
 
+  const generatePageData = () => {
+    return (
+      <span>{pageData}</span>
+    );
+  }
+
   return (
-    <div></div>
+    <div className='char-data-container char-data'>
+      {generatePageData()}
+    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Layout, Row } from 'antd';
+import { Col, Divider, Layout, Row } from 'antd';
 import { PageData } from '../../components/pageData';
 
 const { Content } = Layout;
@@ -18,7 +18,9 @@ function DataPagePanel() {
       </Row>
       <Divider orientation='left'>Page Data</Divider>
       <Row justify='center'>
-        <PageData />
+        <Col span={24}>
+          <PageData />
+        </Col>
       </Row>
     </Content>
   );
