@@ -226,6 +226,7 @@ export function getNewColumnInsertValues(buffer, parentObjectId, dataType, isVar
  */
 export function getColumnDefinitionsByName(buffer, schemaName, tableName) {
   const tableObject = getTableObjectByName(buffer, schemaName, tableName);
+  console.log(tableObject);
   const tableObjectId = tableObject.find(col => col.name.toLowerCase() === 'object_id');
 
   return getColumnDefinitionsByTableObjectId(buffer, tableObjectId);
@@ -253,7 +254,7 @@ export function getColumnDefinitionsByTableObjectId(buffer, tableObjectId) {
   const columnDefinitions = [];
 
   resultSet.forEach(row => {
-    columnDefinitions.push(parseColumnDefinition(buffer, row));
+    columnDefinitions.push(parseColumnDefinition(buffer, row.columns));
   });
 
   return columnDefinitions;

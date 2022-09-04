@@ -39,7 +39,7 @@ export function executeUpdate(buffer, queryTree, requestor) {
   const results = buffer.pageScan(rootPageId, queryTree.where, columnDefinitions, []);
 
   const updatedRows = results.map(row => {
-    return row.map(col => {
+    return row.columns.map(col => {
       const updNode = getUpdateNode(col.name, queryTree.set);
       if (updNode != null) {
         col.value = computeUpdateValue(updNode, row);

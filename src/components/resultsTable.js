@@ -51,10 +51,11 @@ function ResultsTable(props) {
   const populateResults = () => {
     generateColumns();
     const resultset = data.map((row, i) => {
-      const columns = row.sort((a, b) => a.order - b.order);
+      const columns = row.columns.sort((a, b) => a.order - b.order);
 
       const data = {
-        _recordNum: i + 1
+        _recordNum: i + 1,
+        __page_id: row.__page_id
       };
 
       for (let col of columns) {
@@ -71,7 +72,7 @@ function ResultsTable(props) {
   const generateColumns = () => {
     if (data && data.length > 0) {
       console.log(data);
-      const cols = data[0].map(col => {
+      const cols = data[0].columns.map(col => {
         return {
           align: 'left',
           dataIndex: col.name,

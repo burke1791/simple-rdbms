@@ -209,7 +209,7 @@ export function getObjectById(buffer, objectId) {
 
   const resultset = buffer.executeSelect('objects', predicate);
 
-  return resultset[0] || undefined;
+  return resultset[0].columns || undefined;
 }
 
 /**
@@ -237,5 +237,5 @@ export function getTableObjectByName(buffer, schema_name, table_name) {
     throw new Error('getTableObjectByName: returned more than one result for schema: ' + schema_name + ' and object: ' + table_name);
   }
 
-  return resultSet[0];
+  return resultSet[0].columns;
 }

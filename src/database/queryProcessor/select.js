@@ -25,6 +25,7 @@ export function executeSelect(buffer, queryTree) {
   }
   
   const objectRecord = getTableObjectByName(buffer, schemaName, tableName);
+  console.log(objectRecord);
   const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
   const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;
 
@@ -46,14 +47,17 @@ export function executeSelect(buffer, queryTree) {
 function filterResultColumns(results, queryTree) {
   if (queryTree.result[0].variant != 'star') {
     const prunedResults = results.map(row => {
-      const columns = row.filter(col => {
+      const columns = row.columns.filter(col => {
         const matchedCol = queryTree.result.find(res => res.type == 'identifier' && res.name === col.name.toLowerCase());
 
         if (matchedCol == undefined) return false;
         return true;
       });
 
-      return columns;
+      return {
+        ...row,
+        columns: columns
+      };
     });
 
     return prunedResults;

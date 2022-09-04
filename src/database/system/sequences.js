@@ -177,9 +177,9 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
     throw new Error('getNextSequenceValue: returned more than one result for schema: ' + predicate);
   }
 
-  const sequenceId = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_id').value);
-  const nextSequenceValue = Number(resultset[0].find(col => col.name.toLowerCase() === 'next_sequence_value').value);
-  const seqIncrement = Number(resultset[0].find(col => col.name.toLowerCase() === 'sequence_increment').value);
+  const sequenceId = Number(resultset[0].columns.find(col => col.name.toLowerCase() === 'sequence_id').value);
+  const nextSequenceValue = Number(resultset[0].columns.find(col => col.name.toLowerCase() === 'next_sequence_value').value);
+  const seqIncrement = Number(resultset[0].columns.find(col => col.name.toLowerCase() === 'sequence_increment').value);
 
   query = `
     Update sys.sequences

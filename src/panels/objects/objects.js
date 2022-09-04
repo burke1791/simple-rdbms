@@ -34,6 +34,7 @@ function ObjectsPanel(props) {
   }
 
   const handleQueryResult = (data) => {
+    console.log(data)
     if (data.queryId == queryId.current && data.type == 'RESULTS') {
       const sortedTables = data.recordset.sort((a, b) => a.schema_name - b.schema_name || a.object_name - b.object_name);
       setTables(sortedTables);
@@ -44,9 +45,9 @@ function ObjectsPanel(props) {
 
   const generateTableList = () => {
     return tables.map(t => {
-      const objectId = t.find(col => col.name == 'object_id').value;
-      const schema = t.find(col => col.name == 'schema_name').value;
-      const table = t.find(col => col.name == 'object_name').value;
+      const objectId = t.columns.find(col => col.name == 'object_id').value;
+      const schema = t.columns.find(col => col.name == 'schema_name').value;
+      const table = t.columns.find(col => col.name == 'object_name').value;
 
       return (
         <Menu.Item key={objectId}>
