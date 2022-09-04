@@ -3,6 +3,7 @@ import { Button, Col, Layout, Row } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDbDispatch, useDbState } from '../../context';
 import ResultsTable from '../../components/resultsTable';
+import DataPagePanel from '../../panels/dataPagePanel/dataPagePanel';
 
 const { Content, Header } = Layout;
 
@@ -37,7 +38,7 @@ function DataPageView() {
       </Header>
       <Row>
         <Col span={12}>
-          
+          <DataPagePanel />
         </Col>
         <Col span={12}>
           <ResultsTable

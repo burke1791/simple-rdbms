@@ -94,6 +94,12 @@ function ResultsTable(props) {
     }
   }
 
+  const rowClicked = (record) => {
+    if (props.onRowClick) {
+      props.onRowClick(record);
+    }
+  }
+
   return (
     <Table
       bordered
@@ -108,7 +114,7 @@ function ResultsTable(props) {
       style={props.style}
       onRow={(record) => {
         return {
-          onClick: props.onRowClick || (() => null)
+          onClick: () => rowClicked(record)
         }
       }}
     />
