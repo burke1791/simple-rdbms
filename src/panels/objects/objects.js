@@ -34,12 +34,12 @@ function ObjectsPanel(props) {
   }
 
   const handleQueryResult = (data) => {
-    console.log(data)
+    // console.log(data);
     if (data.queryId == queryId.current && data.type == 'RESULTS') {
       const sortedTables = data.recordset.sort((a, b) => a.schema_name - b.schema_name || a.object_name - b.object_name);
       setTables(sortedTables);
     } else {
-      console.log(data);
+      // console.log(data);
     }
   }
 

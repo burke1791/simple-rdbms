@@ -42,7 +42,7 @@ export function executeUpdate(buffer, queryTree, requestor) {
     return row.columns.map(col => {
       const updNode = getUpdateNode(col.name, queryTree.set);
       if (updNode != null) {
-        col.value = computeUpdateValue(updNode, row);
+        col.value = computeUpdateValue(updNode, row.columns);
       }
 
       return col;

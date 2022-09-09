@@ -56,7 +56,7 @@ function CodeEditor() {
 
   const handleQueryResult = (data) => {
     if (data.queryId == queryId.current && data.type == 'RESULTS') {
-      console.log(data.recordset);
+      // console.log(data.recordset);
       dbDispatch({ type: 'update', key: 'data', value: data.recordset });
       dbDispatch({ type: 'update', key: 'error', value: false });
       dbDispatch({ type: 'update', key: 'newData', value: new Date().valueOf() });

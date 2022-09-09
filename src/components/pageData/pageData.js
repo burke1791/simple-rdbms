@@ -1,27 +1,27 @@
-import React, { useEffect } from 'react';
-import { useDbDispatch, useDbState } from '../../context';
+import React, { useEffect, useState } from 'react';
+import { useDbState } from '../../context';
 import './pageData.css';
 
 function PageData(props) {
 
+  const [dataPageElements, setDataPageElements] = useState([]);
+
   const { pageData, pageDataTrigger } = useDbState();
-  const dbDispatch = useDbDispatch();
 
   useEffect(() => {
     if (pageDataTrigger) {
-      console.log(pageData);
+      generateDataPageCharElements();
     }
   }, [pageDataTrigger]);
 
-  const generatePageData = () => {
-    return (
-      <span>{pageData}</span>
-    );
+  const generateDataPageCharElements = () => {
+    const charElements = <span>{pageData}</span>;
+    setDataPageElements(charElements);
   }
 
   return (
     <div className='char-data-container char-data'>
-      {generatePageData()}
+      {dataPageElements}
     </div>
   );
 }

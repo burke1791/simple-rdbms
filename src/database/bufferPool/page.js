@@ -93,7 +93,8 @@ function Page() {
       let recordIndex = Number(slotArr[i]);
       const record = {
         columns: deserializeRecord(recordIndex, this.data, columnDefinitions),
-        __page_id: Number(getHeaderValue('pageId', this.header))
+        __page_id: Number(getHeaderValue('pageId', this.header)),
+        __recordIndex: recordIndex
       }
       records.push(record);
     }

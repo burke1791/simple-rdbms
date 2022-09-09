@@ -45,12 +45,12 @@ function DbWrapper(props) {
   }
 
   const processQuery = (query) => {
-    console.log('received query: ');
-    console.log(query);
+    // console.log('received query: ');
+    // console.log(query);
 
     try {
       const tree = sqliteParser(query.sql);
-      console.log(tree);
+      // console.log(tree);
 
       let queryTree;
 
@@ -62,7 +62,7 @@ function DbWrapper(props) {
         }
       }
 
-      console.log(queryTree);
+      // console.log(queryTree);
 
       const records = executeQuery(buffer, queryTree);
 

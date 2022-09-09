@@ -16,7 +16,7 @@ function IDE() {
   const dbDispatch = useDbDispatch();
 
   const toDataPageView = (record) => {
-    console.log(record);
+    // console.log(record);
     dbDispatch({ type: 'update', key: 'pageIdRequest', value: record.__page_id });
     dbDispatch({ type: 'update', key: 'pageIdRequestTrigger', value: new Date().valueOf() });
     navigate('/data-page');

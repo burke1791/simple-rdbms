@@ -25,7 +25,7 @@ export function executeSelect(buffer, queryTree) {
   }
   
   const objectRecord = getTableObjectByName(buffer, schemaName, tableName);
-  console.log(objectRecord);
+  // console.log(objectRecord);
   const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
   const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;
 
