@@ -6,17 +6,8 @@ const { Content } = Layout;
 
 function DataPagePanel() {
 
-  /*
-    
-  */
-
   return (
     <Content>
-      <Divider orientation='left'>Page Header</Divider>
-      <Row justify='center'>
-        {/* Data Page Header Info */}
-      </Row>
-      <Divider orientation='left'>Page Data</Divider>
       <Row justify='center'>
         <Col span={24}>
           <PageData />

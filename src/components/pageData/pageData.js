@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useDbState } from '../../context';
 import { getRecordIndexMarkers } from '../../database/bufferPool/deserializer';
 import './pageData.css';
+import PageDataRecord from './pageDataRecord';
 
 function PageData() {
 
   const [dataPageElements, setDataPageElements] = useState([]);
 
-  const { columnDefinitions, pageData, pageDataTrigger, highlightRecordIndex } = useDbState();
+  const { columnDefinitions, pageData, data, pageDataTrigger, pageId, highlightRecordIndex } = useDbState();
 
   useEffect(() => {
     if (pageDataTrigger) {
@@ -22,29 +23,33 @@ function PageData() {
   }, [highlightRecordIndex]);
 
   const generateDataPageCharElements = (markers) => {
-    let before = '';
-    let record = '';
-    let after = '';
-    const charElements = [];
-    if (markers != undefined) {
-      for (let i in pageData) {
-        if (i < markers.begin) {
-          before += pageData[i];
-        } else if (i >= markers.end) {
-          after += pageData[i];
-        } else {
-          record += pageData[i];
-        }
+    const elements = [];
+
+    const recordMarkers = data.map(r => {
+      return getRecordIndexMarkers(r.__record_index, pageData, columnDefinitions);
+    });
+    recordMarkers.sort((a, b) => a.begin - b.begin);
+
+    let prevMarker = null;
+
+    for (let marker of recordMarkers) {
+      if (prevMarker == null) {
+        const before = pageData.substring(0, marker.begin);
+        elements.push(<span key={0}>{before}</span>);
+      } else {
+        const before = pageData.substring(prevMarker.end, marker.begin);
+        elements.push(<span key={prevMarker.end-1}>{before}</span>);
       }
 
-      charElements.push(<span key='before'>{before}</span>);
-      charElements.push(<span key='record' className='data-highlight'>{record}</span>);
-      charElements.push(<span key='after'>{after}</span>);
-    } else {
-      charElements.push(<span key='data'>{pageData}</span>)
+      const record = pageData.substring(marker.begin, marker.end);
+      elements.push(<PageDataRecord key={marker.begin} recordIndex={marker.begin} data={record} />);
+      prevMarker = marker;
     }
 
-    setDataPageElements(charElements);
+    const final = pageData.substring(prevMarker.end);
+    elements.push(<span key={prevMarker.end}>{final}</span>);
+
+    setDataPageElements(elements);
   }
 
   return (
