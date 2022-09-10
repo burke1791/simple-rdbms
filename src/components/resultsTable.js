@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Typography } from 'antd';
-import { useDbState } from '../context';
+import { useDbDispatch, useDbState } from '../context';
 import { NOTIF, Pubsub, QUERY_TYPE } from '../utilities';
 
 const { Text } = Typography;
@@ -11,6 +11,7 @@ const { Text } = Typography;
  * @property {Object} [scroll]
  * @property {Object} [style]
  * @property {Function} [onRowClick]
+ * @property {Function} [onCellHover]
  */
 
 /**
@@ -24,6 +25,7 @@ function ResultsTable(props) {
   const [loading, setLoading] = useState(false);
 
   const { data, error, newData } = useDbState();
+  const dbDispatch = useDbDispatch();
 
   useEffect(() => {
     Pubsub.subscribe(NOTIF.QUERY, ResultsTable, clearResults);
@@ -50,20 +52,24 @@ function ResultsTable(props) {
 
   const populateResults = () => {
     generateColumns();
-    const resultset = data.map((row, i) => {
-      const columns = row.columns.sort((a, b) => a.order - b.order);
-
-      const data = {
-        _recordNum: i + 1,
-        __page_id: row.__page_id
-      };
-
-      for (let col of columns) {
-        data[col.name] = col.value;
-      }
-
-      return data;
-    });
+    let resultset = [];
+    if (data && data.length) {
+      resultset = data.map((row, i) => {
+        const columns = row.columns.sort((a, b) => a.order - b.order);
+  
+        const data = {
+          _recordNum: i + 1,
+          __page_id: row.__page_id,
+          __record_index: row.__record_index
+        };
+  
+        for (let col of columns) {
+          data[col.name] = col.value;
+        }
+  
+        return data;
+      });
+    }
 
     setResults(resultset);
     setLoading(false);
@@ -86,11 +92,8 @@ function ResultsTable(props) {
             return <Text ellipsis>{value}</Text>;
           },
           onCell: (record) => {
-
             return {
-              onMouseEnter: () => {
-                // console.log(record);
-              }
+              onMouseEnter: () => { cellHover(record) }
             };
           }
         };
@@ -108,6 +111,12 @@ function ResultsTable(props) {
     }
   }
 
+  const cellHover = (record) => {
+    if (props.onCellHover) {
+      props.onCellHover(record);
+    }
+  }
+
   return (
     <Table
       bordered
@@ -122,7 +131,7 @@ function ResultsTable(props) {
       style={props.style}
       onRow={(record) => {
         return {
-          onClick: () => rowClicked(record)
+          onClick: () => { rowClicked(record) }
         }
       }}
     />

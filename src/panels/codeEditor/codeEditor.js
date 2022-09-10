@@ -56,13 +56,15 @@ function CodeEditor() {
 
   const handleQueryResult = (data) => {
     if (data.queryId == queryId.current && data.type == 'RESULTS') {
-      // console.log(data.recordset);
+      console.log(data.recordset);
       dbDispatch({ type: 'update', key: 'data', value: data.recordset });
+      dbDispatch({ type: 'update', key: 'columnDefinitions', value: data.columnDefinitions });
       dbDispatch({ type: 'update', key: 'error', value: false });
       dbDispatch({ type: 'update', key: 'newData', value: new Date().valueOf() });
     } else if (data.queryId == queryId.current && data.type == 'ERROR') {
       console.log(data.error);
       dbDispatch({ type: 'update', key: 'data', value: null });
+      dbDispatch({ type: 'update', key: 'columnDefinitions', value: null });
       dbDispatch({ type: 'update', key: 'error', value: true });
       dbDispatch({ type: 'update', key: 'newData', value: new Date().valueOf() });
     }

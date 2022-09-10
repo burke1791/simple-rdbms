@@ -64,12 +64,13 @@ function DbWrapper(props) {
 
       // console.log(queryTree);
 
-      const records = executeQuery(buffer, queryTree);
+      const queryResult = executeQuery(buffer, queryTree);
 
       const result = {
         queryId: query.id,
         type: 'RESULTS',
-        recordset: records
+        recordset: queryResult.resultset,
+        columnDefinitions: queryResult.columnDefinitions
       };
       Pubsub.publish(NOTIF.QUERY_RESULT, result);
     } catch (error) {

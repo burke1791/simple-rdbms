@@ -209,7 +209,7 @@ export function getObjectById(buffer, objectId) {
 
   const resultset = buffer.executeSelect('objects', predicate);
 
-  return resultset[0].columns || undefined;
+  return resultset[0].resultset.columns || undefined;
 }
 
 /**

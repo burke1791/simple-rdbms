@@ -70,6 +70,91 @@ export function deserializeRecord(recordIndex, pageData, columnDefinitions) {
 
 /**
  * @function
+ * @param {Number} recordIndex 
+ * @param {String} pageData 
+ * @param {Array<ColumnDefinition>} columnDefinitions 
+ * @returns {Object}
+ */
+export function getRecordIndexMarkers(recordIndex, pageData, columnDefinitions) {
+  const markers = {
+    begin: recordIndex,
+    columns: []
+  }
+
+  const fixedLengthDefinitions = columnDefinitions.filter(def => {
+    return !def.isVariable;
+  });
+  fixedLengthDefinitions.sort((a, b) => a.order - b.order);
+
+  const variableLengthDefinitions = columnDefinitions.filter(def => {
+    return def.isVariable;
+  });
+  variableLengthDefinitions.sort((a, b) => a.order - b.order);
+
+  const numFixed = fixedLengthDefinitions.length;
+  const numVariable = variableLengthDefinitions.length;
+
+  // null bitmap offset
+  const nullBitmapOffset = Number(pageData.substring(recordIndex, recordIndex + 4));
+  const nullBitmapStart = recordIndex + Number(nullBitmapOffset);
+  const nullBitmapSize = Number(pageData.substring(nullBitmapStart, nullBitmapStart + 2));
+  const nullBitmapEnd = nullBitmapStart + nullBitmapSize;
+
+  markers.nullBitmapStart = nullBitmapStart;
+  markers.nullBitmapEnd = nullBitmapEnd;
+
+  const nullBitmap = pageData.substring(nullBitmapStart, nullBitmapEnd);
+  const nullBitmapColumns = nullBitmap.substring(2).split('');
+
+  const varOffsetEnd = nullBitmapEnd + 2 + (4 * numVariable);
+
+  markers.variableOffsetStart = nullBitmapEnd;
+  markers.variableOffsetEnd = varOffsetEnd;
+
+  const varOffsetArray = pageData.substring(nullBitmapEnd, varOffsetEnd);
+  const varOffsetColumns = varOffsetArray.substring(2).match(/[\s\S]{1,4}/g);
+
+  let colNum = 1;
+
+  for (let i = 0; i < nullBitmapColumns.length; i++) {
+    if (nullBitmapColumns[i] == '1') {
+      // column is null and doesn't take up any space
+    } else if (colNum > numFixed) {
+      // variable length columns
+      const offset = getVariableLengthColumnOffset(colNum - numFixed, varOffsetColumns);
+      const colLength = getVariableColumnLength(colNum - numFixed, 
+      varOffsetColumns);
+      const colStart = varOffsetEnd + offset - colLength;
+      const col = pageData.substring(colStart, colStart + colLength);
+      const val = getVariableLengthColumnValue(colNum - numFixed, variableLengthDefinitions, col);
+      
+      markers.columns.push({
+        name: val.name,
+        begin: colStart,
+        end: colStart + colLength
+      });
+      markers.end = colStart + colLength;
+    } else {
+      // fixed length columns
+      const [colStart, colEnd] = getFixedColumnValueIndexes(colNum, fixedLengthDefinitions, nullBitmapColumns);
+      const col = pageData.substring(colStart + recordIndex, colEnd + recordIndex);
+      const val = getFixedLengthColumnValue(colNum, fixedLengthDefinitions, col);
+      markers.columns.push({
+        name: val.name,
+        begin: recordIndex + colStart,
+        end: recordIndex + colEnd
+      });
+      markers.end = recordIndex + colEnd;
+    }
+
+    colNum++;
+  }
+
+  return markers;
+}
+
+/**
+ * @function
  * @param {Number} colNum 
  * @param {Array<String>} offsetArr 
  * @returns {Number}

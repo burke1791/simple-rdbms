@@ -94,7 +94,7 @@ function Page() {
       const record = {
         columns: deserializeRecord(recordIndex, this.data, columnDefinitions),
         __page_id: Number(getHeaderValue('pageId', this.header)),
-        __recordIndex: recordIndex
+        __record_index: recordIndex
       }
       records.push(record);
     }

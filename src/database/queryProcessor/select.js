@@ -25,7 +25,6 @@ export function executeSelect(buffer, queryTree) {
   }
   
   const objectRecord = getTableObjectByName(buffer, schemaName, tableName);
-  // console.log(objectRecord);
   const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
   const tableObjectId = objectRecord.find(col => col.name.toLowerCase() === 'object_id').value;
 
@@ -35,7 +34,12 @@ export function executeSelect(buffer, queryTree) {
 
   const filteredResults = filterResultColumns(results, queryTree);
 
-  return filteredResults;
+  const queryResult = {
+    resultset: filteredResults,
+    columnDefinitions: columnDefinitions
+  };
+
+  return queryResult;
 }
 
 /**
