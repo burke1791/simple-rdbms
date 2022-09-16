@@ -34,6 +34,9 @@ jobs:
         run: npm run build
       - name: Deploy
         run: aws s3 sync ./build s3://${{ secrets.AWS_S3_BUCKET }}
+      - name: Invalidate Cloudront Cache
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID }} --paths "/*"
+
 
   # invalidate:
   #   name: Invalidate
