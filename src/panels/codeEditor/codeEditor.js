@@ -41,7 +41,7 @@ function CodeEditor() {
   }
 
   const sendQuery = () => {
-    const uuid = crypto.randomUUID();
+    const uuid = window.crypto.randomUUID();
 
     queryId.current = uuid;
 

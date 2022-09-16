@@ -20,7 +20,7 @@ function ObjectsPanel(props) {
 
   const fetchTables = () => {
     const sql = 'Select object_id, schema_name, object_name From sys.objects Where object_type_id = 1';
-    const uuid = crypto.randomUUID();
+    const uuid = window.crypto.randomUUID();
 
     queryId.current = uuid;
 
