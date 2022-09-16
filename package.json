@@ -1,12 +1,15 @@
 {
   "name": "stupid-simple-rdbms",
   "version": "1.0.0",
+  "homepage": "https://burke1791.github.io/simple-rdbms/",
   "description": "A stupidly simple implementation of an RDBMS in node.",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "start": "webpack serve",
-    "build": "webpack"
+    "build": "webpack",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "repository": {
     "type": "git",
@@ -18,10 +21,10 @@
   "bugs": {
     "url": "https://github.com/burke1791/stupid-simple-rdbms/issues"
   },
-  "homepage": "https://github.com/burke1791/stupid-simple-rdbms#readme",
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "antd": "^4.22.4",
+    "gh-pages": "^4.0.0",
     "prismjs": "^1.28.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
