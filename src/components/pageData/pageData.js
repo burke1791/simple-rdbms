@@ -14,7 +14,6 @@ function PageData() {
     if (pageDataTrigger) {
       console.log('page trigger');
       if (pageData != undefined) {
-        console.log(pageData);
         generateDataPageCharElements();
       }
     }
