@@ -81,6 +81,8 @@ export function getRecordIndexMarkers(recordIndex, pageData, columnDefinitions) 
     columns: []
   }
 
+  console.log('***  getRecordIndexMarkers begin ***');
+
   const fixedLengthDefinitions = columnDefinitions.filter(def => {
     return !def.isVariable;
   });
@@ -99,6 +101,9 @@ export function getRecordIndexMarkers(recordIndex, pageData, columnDefinitions) 
   const nullBitmapStart = recordIndex + Number(nullBitmapOffset);
   const nullBitmapSize = Number(pageData.substring(nullBitmapStart, nullBitmapStart + 2));
   const nullBitmapEnd = nullBitmapStart + nullBitmapSize;
+
+  console.log(nullBitmapOffset);
+  console.log(nullBitmapSize);
 
   markers.nullBitmapStart = nullBitmapStart;
   markers.nullBitmapEnd = nullBitmapEnd;
@@ -221,6 +226,8 @@ export function getFixedColumnValueIndexes(colNum, fixedDefinitions, nullBitmapC
       colStart += size;
     }
   }
+
+  console.log(nullBitmapColumns);
 
   throw new Error('Incorrect number of fixed-length columns');
 }

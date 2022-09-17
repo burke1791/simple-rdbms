@@ -13,13 +13,18 @@ function PageData() {
   useEffect(() => {
     if (pageDataTrigger) {
       console.log('page trigger');
-      generateDataPageCharElements();
+      if (pageData != undefined) {
+        console.log(pageData);
+        generateDataPageCharElements();
+      }
     }
   }, [pageDataTrigger]);
 
   useEffect(() => {
-    const markers = getRecordIndexMarkers(highlightRecordIndex, pageData, columnDefinitions);
-    generateDataPageCharElements(markers);
+    if (pageData != undefined) {
+      const markers = getRecordIndexMarkers(highlightRecordIndex, pageData, columnDefinitions);
+      generateDataPageCharElements(markers);
+    }
   }, [highlightRecordIndex]);
 
   const generateDataPageCharElements = (markers) => {
