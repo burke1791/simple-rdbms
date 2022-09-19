@@ -77,7 +77,6 @@ function ResultsTable(props) {
 
   const generateColumns = () => {
     if (data && data.length > 0) {
-      console.log(data);
       const cols = data[0].columns.map(col => {
         return {
           align: 'left',

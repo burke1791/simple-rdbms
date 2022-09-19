@@ -18,12 +18,18 @@ function DataPageView() {
     dbDispatch({ type: 'update', key: 'highlightRecordIndex', value: record.__record_index });
   }
 
+  const returnToIde = () => {
+    dbDispatch({ type: 'update', key: 'pageId', value: null });
+    dbDispatch({ type: 'update', key: 'pageData', value: null });
+    navigate('/');
+  }
+
   return (
     <Content>
       <Header>
         <Button
           type='primary'
-          onClick={() => navigate('/')}
+          onClick={returnToIde}
         >
           Back to IDE
         </Button>

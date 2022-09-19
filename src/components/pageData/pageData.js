@@ -12,7 +12,6 @@ function PageData() {
 
   useEffect(() => {
     if (pageDataTrigger) {
-      console.log('page trigger');
       if (pageData != undefined) {
         generateDataPageCharElements();
       }
