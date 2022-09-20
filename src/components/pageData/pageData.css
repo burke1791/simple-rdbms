@@ -7,9 +7,9 @@
 
 .char-data-container {
   margin: 12px 8px;
-  border: 1px solid #030852;
+  border: 1px solid #000;
   border-radius: 5px;
-  background-color: #d6e4ff;
+  background-color: #fff;
   padding: 5px;
   width: '100%';
   overflow-y: scroll;
@@ -17,7 +17,15 @@
 }
 
 .data-highlight {
-  border: 1px solid #092b00;
+  border: 2px solid #092b00;
   color: #135200;
   border-radius: 3px;
+  font-weight: 600;
+}
+
+.sticky-highlight {
+  border: 2px solid #120338;
+  color: #22075e;
+  border-radius: 3px;
+  font-weight: 600;
 }

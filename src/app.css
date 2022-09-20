@@ -1,3 +1,15 @@
 .pointer {
   cursor: pointer;
 }
+
+.sticky-hover {
+  background-color: #b37feb;
+}
+
+.hover {
+  background-color: #95de64;
+}
+
+.hover:hover td {
+  background-color: #95de64 !important;
+}

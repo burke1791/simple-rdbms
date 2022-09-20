@@ -8,7 +8,7 @@ function PageData() {
 
   const [dataPageElements, setDataPageElements] = useState([]);
 
-  const { columnDefinitions, pageData, data, pageDataTrigger, pageId, highlightRecordIndex } = useDbState();
+  const { columnDefinitions, pageData, data, pageDataTrigger, pageId, highlightRecordIndex, stickyHighlightRecordIndex } = useDbState();
 
   useEffect(() => {
     if (pageDataTrigger) {
@@ -18,14 +18,13 @@ function PageData() {
     }
   }, [pageDataTrigger]);
 
-  useEffect(() => {
-    if (pageData != undefined) {
-      const markers = getRecordIndexMarkers(highlightRecordIndex, pageData, columnDefinitions);
-      generateDataPageCharElements(markers);
-    }
-  }, [highlightRecordIndex]);
+  // useEffect(() => {
+  //   if (pageData != undefined) {
+  //     generateDataPageCharElements();
+  //   }
+  // }, [highlightRecordIndex, stickyHighlightRecordIndex]);
 
-  const generateDataPageCharElements = (markers) => {
+  const generateDataPageCharElements = () => {
     const elements = [];
 
     const recordMarkers = data.map(r => {

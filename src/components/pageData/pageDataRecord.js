@@ -15,17 +15,19 @@ function PageDataRecord(props) {
 
   const [className, setClassName] = useState(null);
 
-  const { highlightRecordIndex } = useDbState();
+  const { highlightRecordIndex, stickyHighlightRecordIndex } = useDbState();
 
   const dbDispatch = useDbDispatch();
 
   useEffect(() => {
     if (highlightRecordIndex == props.recordIndex) {
       setClassName('data-highlight');
+    } else if (stickyHighlightRecordIndex == props.recordIndex) {
+      setClassName('sticky-highlight');
     } else {
       setClassName(null);
     }
-  }, [highlightRecordIndex]);
+  }, [stickyHighlightRecordIndex, highlightRecordIndex]);
 
   const onMouseEnter = () => {
     dbDispatch({ type: 'update', key: 'highlightRecordIndex', value: props.recordIndex });
