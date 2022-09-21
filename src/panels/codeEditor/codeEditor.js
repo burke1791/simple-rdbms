@@ -5,6 +5,7 @@ import Prism from 'prismjs';
 import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 import { useDbDispatch } from '../../context';
 import { useEditorDispatch, useEditorState } from '../../context/editorContext';
+import { message } from 'antd';
 
 function CodeEditor() {
 
@@ -57,6 +58,11 @@ function CodeEditor() {
   const handleQueryResult = (data) => {
     if (data.queryId == queryId.current && data.type == 'RESULTS') {
       console.log(data.recordset);
+
+      if (data.recordset && data.recordset.length == 0) {
+        message.info('No records returned');
+      }
+
       dbDispatch({ type: 'update', key: 'data', value: data.recordset });
       dbDispatch({ type: 'update', key: 'columnDefinitions', value: data.columnDefinitions });
       dbDispatch({ type: 'update', key: 'error', value: false });

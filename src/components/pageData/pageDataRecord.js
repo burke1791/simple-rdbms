@@ -1,10 +1,23 @@
+import { Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDbDispatch, useDbState } from '../../context';
+import RecordPopover from './RecordPopover';
+
+/**
+ * @typedef RecordMarkers
+ * @property {Number} begin
+ * @property {Number} end
+ * @property {Number} nullBitmapStart
+ * @property {Number} nullBitmapEnd
+ * @property {Number} variableOffsetStart
+ * @property {Number} variableOffsetEnd
+ */
 
 /**
  * @typedef PageDataRecordProps
  * @property {String} data
  * @property {Number} recordIndex
+ * @property {RecordMarkers} markers
  */
 
 /**
@@ -34,12 +47,23 @@ function PageDataRecord(props) {
   }
 
   return (
-    <span
-      onMouseEnter={onMouseEnter}
-      className={className}
+    <Popover
+      title='Record Details' 
+      content={
+        <RecordPopover
+          markers={props.markers}
+          recordIndex={props.recordIndex}
+          data={props.data}
+        />
+      }
     >
-      {props.data}
-    </span>
+      <span
+        onMouseEnter={onMouseEnter}
+        className={className}
+      >
+        {props.data}
+      </span>
+    </Popover>
   )
 }
 

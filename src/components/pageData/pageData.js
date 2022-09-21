@@ -18,12 +18,6 @@ function PageData() {
     }
   }, [pageDataTrigger]);
 
-  // useEffect(() => {
-  //   if (pageData != undefined) {
-  //     generateDataPageCharElements();
-  //   }
-  // }, [highlightRecordIndex, stickyHighlightRecordIndex]);
-
   const generateDataPageCharElements = () => {
     const elements = [];
 
@@ -44,7 +38,7 @@ function PageData() {
       }
 
       const record = pageData.substring(marker.begin, marker.end);
-      elements.push(<PageDataRecord key={marker.begin} recordIndex={marker.begin} data={record} />);
+      elements.push(<PageDataRecord key={marker.begin} recordIndex={marker.begin} data={record} markers={marker} />);
       prevMarker = marker;
     }
 
