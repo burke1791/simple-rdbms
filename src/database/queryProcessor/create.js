@@ -162,6 +162,9 @@ function parseConstraints(def, node) {
           def.isPrimaryKey = true;
           def.autoIncrement = !!colDef?.autoIncrement;
           break;
+        case 'null':
+          def.isNullable = true;
+          break;
         default:
           throw new Error('Unsupported constraint');
       }

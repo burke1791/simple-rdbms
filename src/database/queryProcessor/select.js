@@ -8,21 +8,11 @@ import { getColumnDefinitionsByTableObjectId, getTableObjectByName } from '../sy
  * @returns {Array<Array<ResultCell>>}
  */
 export function executeSelect(buffer, queryTree) {
-  /*
-    Currently allowing single-table queries only
-  */
+  if (queryTree.from.length > 1) throw new Error('Multi-table queries are not supported');
 
-  const table = queryTree.from.name.split('.');
-  let schemaName;
-  let tableName;
-
-  if (table.length == 2) {
-    schemaName = table[0];
-    tableName = table[1]; 
-  } else if (table.length == 1) {
-    schemaName = 'dbo';
-    tableName = table[0];
-  }
+  // for some reason the sql parser doesn't understand that two-part naming refers to the schema and table
+  const schemaName = queryTree.from[0].db || 'dbo';
+  const tableName = queryTree.from[0].table;
   
   const objectRecord = getTableObjectByName(buffer, schemaName, tableName);
   const rootPageId = objectRecord.find(col => col.name.toLowerCase() === 'root_page_id').value;
@@ -49,10 +39,10 @@ export function executeSelect(buffer, queryTree) {
  * @returns {Array<Array<ResultCell>>}
  */
 function filterResultColumns(results, queryTree) {
-  if (queryTree.result[0].variant != 'star') {
+  if (queryTree.columns != '*') {
     const prunedResults = results.map(row => {
       const columns = row.columns.filter(col => {
-        const matchedCol = queryTree.result.find(res => res.type == 'identifier' && res.name === col.name.toLowerCase());
+        const matchedCol = queryTree.columns.find(res => res.expr.type == 'column_ref' && res.expr.column.toLowerCase() === col.name.toLowerCase());
 
         if (matchedCol == undefined) return false;
         return true;

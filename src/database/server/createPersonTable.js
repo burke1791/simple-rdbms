@@ -11,8 +11,11 @@ export function createPersonTable(buffer) {
     Create Table dbo.person (
       person_id Int Primary Key Autoincrement Not Null,
       first_name Varchar(100) Not Null,
+      middle_name Varchar(100) Null,
       last_name Varchar(100) Not Null,
-      age Int Not Null
+      age Int Not Null,
+      height_inches SmallInt Null,
+      weight_lbs Int Null
     )
   `;
 

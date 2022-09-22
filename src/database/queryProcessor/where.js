@@ -6,7 +6,7 @@
  * @returns {Array<DataRecord>}
  */
  export function filterResults(results, where) {
-  if (!where || where.length == 0) return results;
+  if (where == null) return results;
 
   return results.filter(row => {
     return evaluateRow(row.columns, where);
@@ -20,11 +20,13 @@
  * @returns {Boolean}
  */
 function evaluateRow(row, where) {
-  for (let node of where) {
-    const isFiltered = evaluateSubtree(row, node);
-    if (!isFiltered) return false;
-  }
-  return true;
+  // for (let node of where) {
+  //   const isFiltered = evaluateSubtree(row, node);
+  //   if (!isFiltered) return false;
+  // }
+  // return true;
+
+  return evaluateSubtree(row, where);
 }
 
 /**
@@ -34,8 +36,9 @@ function evaluateRow(row, where) {
  * @returns {(Boolean|String|Number)}
  */
 function evaluateSubtree(row, tree) {
-  if (tree.type == 'identifier') {
-    const col = row.find(col => col.name === tree.name);
+  // console.trace();
+  if (tree.type == 'column_ref') {
+    const col = row.find(col => col.name.toLowerCase() === tree.column.toLowerCase());
 
     if (col == undefined) {
       console.log(tree);
@@ -43,34 +46,26 @@ function evaluateSubtree(row, tree) {
       throw new Error('Unable to match tree (left) identifier to column');
     }
 
-    return col.value;
-  } else if (tree.type == 'literal') {
-    let value;
-
-    switch (tree.variant) {
-      case 'decimal':
-        value = Number(tree.value);
-        break;
-      case 'text':
-        value = tree.value;
-        break;
-      case 'null':
-        value = null;
-        break;
-      default:
-        throw new Error('Invalid right tree variant');
-    }
-
-    return value;
+    return col.value === null ? null : `${col.value}`.toLowerCase();
+  } else if (tree.type == 'number') {
+    return `${tree.value}`;
+  } else if (tree.type == 'string') {
+    return tree.value.toLowerCase();
+  } else if (tree.type == 'null') {
+    return null;
   } else {
     const left = evaluateSubtree(row, tree.left);
     const right = evaluateSubtree(row, tree.right);
 
-    switch (tree.operation) {
+    switch (tree.operator.toLowerCase()) {
       case 'and':
         return left && right;
       case '=':
         return left == right;
+      case 'is':
+        return left === right;
+      case 'is not':
+        return left !== right;
       default:
         throw new Error('Unsupported predicate operation');
     }

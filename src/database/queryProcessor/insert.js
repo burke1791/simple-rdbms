@@ -26,13 +26,31 @@ export function executeInsert(buffer, queryTree, requestor) {
   const values = queryTree.result.map(row => {
     const columns = [];
     for (let i in row.expression) {
+      const type = row.expression[i].type;
+      const variant = row.expression[i].variant;
+
+      if (type != 'literal') throw new Error('Insert values must be literals');
+
+      let value;
+
+      switch (variant) {
+        case 'null':
+          value = null;
+          break;
+        default:
+          value = row.expression[i].value;
+      }
+
       columns.push({
         name: queryTree.into.columns[i].name,
-        value: row.expression[i].value
+        value: value
       });
     }
     return columns;
   });
+
+  console.log(queryTree);
+  console.log(values);
 
   // Step 2
   const table = queryTree.into.name.split('.');
@@ -55,11 +73,13 @@ export function executeInsert(buffer, queryTree, requestor) {
 
   const columnDefinitions = getColumnDefinitionsByTableObjectId(buffer, tableObjectId);
 
+  console.log(columnDefinitions);
+
   // Step 2a
   for (let col of values[0]) {
     const def = columnDefinitions.find(colDef => colDef.name == col.name);
 
-    if (def == undefined) throw new Error('Column: ' + col.name + ' does not exits');
+    if (def == undefined) throw new Error('Column: ' + col.name + ' does not exist');
   }
 
   // Step 2c

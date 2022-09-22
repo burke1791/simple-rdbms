@@ -13,7 +13,7 @@ import { executeUpdate } from './update';
 export function executeQuery(buffer, queryTree) {
   let results;
 
-  switch (queryTree.variant) {
+  switch (queryTree.type) {
     case 'select':
       results = executeSelect(buffer, queryTree);
       break;

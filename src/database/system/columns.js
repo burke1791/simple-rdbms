@@ -4,6 +4,14 @@ import { writePageToDisk } from '../storageEngine';
 import { getTableObjectByName } from './objects';
 import { getNextSequenceValue, sequencesTableDefinition } from './sequences';
 import sqliteParser from 'sqlite-parser';
+import { Parser } from 'node-sql-parser';
+import { extractSingleQueryTree } from '../queryProcessor/treeParser';
+
+const parser = new Parser();
+
+const parserConfig = {
+  database: 'TransactSQL'
+};
 
 export const columnsTableDefinition = [
   {
@@ -245,9 +253,11 @@ export function getColumnDefinitionsByTableObjectId(buffer, tableObjectId) {
     Where parent_object_id = ${tableObjectId}
   `;
 
-  const tree = sqliteParser(query);
+  const tree = parser.astify(query, parserConfig);
 
-  const predicate = tree.statement[0].where;
+  const queryTree = extractSingleQueryTree(tree);
+
+  const predicate = queryTree.where;
 
   const resultSet = buffer.pageScan(3, predicate, columnsTableDefinition, []);
 
@@ -284,8 +294,10 @@ function parseColumnDefinition(buffer, resultColumns) {
     Where object_id = ${objectId}
       And column_id = ${columnId}
   `;
-  const tree = sqliteParser(query);
-  const predicate = tree.statement[0].where;
+
+  const tree = parser.astify(query, parserConfig);
+  const queryTree = extractSingleQueryTree(tree);
+  const predicate = queryTree.where;
 
   const sequences = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
 

@@ -3,6 +3,14 @@ import { generateBlankPage } from '../bufferPool/serializer';
 import { writePageToDisk } from '../storageEngine';
 import { _getNewColumnInsertValues } from './columns';
 import sqliteParser from 'sqlite-parser';
+import { Parser } from 'node-sql-parser';
+import { extractSingleQueryTree } from '../queryProcessor/treeParser';
+
+const parser = new Parser();
+
+const parserConfig = {
+  database: 'TransactSQL'
+};
 
 export const objectsTableDefinition = [
   {
@@ -227,9 +235,11 @@ export function getTableObjectByName(buffer, schema_name, table_name) {
       And object_name = '${table_name}'
       And object_type_id = 1
   `
-  const tree = sqliteParser(query);
+  const tree = parser.astify(query, parserConfig);
 
-  const predicate = tree.statement[0].where;
+  const queryTree = extractSingleQueryTree(tree);
+  
+  const predicate = queryTree.where;
 
   const resultSet = buffer.pageScan(1, predicate, objectsTableDefinition, []);
 

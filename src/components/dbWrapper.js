@@ -6,6 +6,7 @@ import { clearLocalStorage, NOTIF, Pubsub } from '../utilities';
 import sqliteParser from 'sqlite-parser';
 import { Parser } from 'node-sql-parser';
 import { executeQuery } from '../database/queryProcessor';
+import { extractSingleQueryTree } from '../database/queryProcessor/treeParser';
 
 const buffer = new BufferPool(10);
 
@@ -95,18 +96,12 @@ function DbWrapper(props) {
 
   const processQuery = (query) => {
     try {
+      const tree2 = sqliteParser(query.sql);
+      console.log(tree2);
       const tree = parser.astify(query.sql, parserConfig);
       console.log(tree);
 
-      let queryTree;
-
-      if (Array.isArray(tree) && tree.length > 1) {
-        throw new Error('Only one query at a time is currently supported');
-      } else if (Array.isArray(tree)) {
-        queryTree = tree[0];
-      } else {
-        queryTree = tree;
-      }
+      const queryTree = extractSingleQueryTree(tree);
 
       const queryResult = executeQuery(buffer, queryTree);
 
