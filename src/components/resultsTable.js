@@ -87,6 +87,8 @@ function ResultsTable(props) {
             let value = text;
             if (typeof text == 'boolean') {
               value = text ? 'true' : 'false';
+            } else if (text === null) {
+              return <Text code>NULL</Text>
             }
             return <Text ellipsis>{value}</Text>;
           },

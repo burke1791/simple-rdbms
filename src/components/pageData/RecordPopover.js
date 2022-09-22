@@ -19,11 +19,7 @@ import { VariableLengthOffsetArray, VariableLengthOffsetArrayDetails } from './v
 function RecordPopover(props) {
 
   return (
-    <Fragment
-      style={{
-        maxWidth: '50vw'
-      }}
-    >
+    <Fragment>
       <Row>
         <NullBitmapOffset data={parseNullBitmapOffset(props.data)} />
         <FixedLengthColumns data={parseFixedLengthColumns(props.data, props.markers)} />

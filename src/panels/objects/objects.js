@@ -1,15 +1,18 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Menu } from 'antd';
 import { TableOutlined } from '@ant-design/icons';
-import { useDbConnectionState } from '../../context';
+import { useDbConnectionState, useEditorDispatch, useEditorState } from '../../context';
 import { NOTIF, Pubsub, QUERY_TYPE } from '../../utilities';
 
 function ObjectsPanel(props) {
 
   const queryId = useRef(null);
   const [tables, setTables] = useState([]);
+  const [tableMenuItems, setTableMenuItems] = useState([]);
 
   const { connected } = useDbConnectionState();
+  const { internalObjectFlag } = useEditorState();
+  const editorDispatch = useEditorDispatch();
 
   useEffect(() => {
     if (connected) {
@@ -18,8 +21,12 @@ function ObjectsPanel(props) {
     }
   }, [connected]);
 
+  useEffect(() => {
+    generateTableList();
+  }, [internalObjectFlag, JSON.stringify(tables)]);
+
   const fetchTables = () => {
-    const sql = 'Select object_id, schema_name, object_name From sys.objects Where object_type_id = 1';
+    const sql = 'Select object_id, schema_name, object_name, is_system_object From sys.objects Where object_type_id = 1';
     const uuid = window.crypto.randomUUID();
 
     queryId.current = uuid;
@@ -44,25 +51,39 @@ function ObjectsPanel(props) {
   }
 
   const generateTableList = () => {
-    return tables.map(t => {
-      const objectId = t.columns.find(col => col.name == 'object_id').value;
+    const tableItems = tables.map(t => {
       const schema = t.columns.find(col => col.name == 'schema_name').value;
       const table = t.columns.find(col => col.name == 'object_name').value;
+      const isSystemObject = t.columns.find(col => col.name == 'is_system_object').value;
 
-      return (
-        <Menu.Item key={objectId}>
-          {schema}.{table}
-        </Menu.Item>
-      );
+      if (!internalObjectFlag && isSystemObject) {
+        return null;
+      } else {
+        return (
+          <Menu.Item key={`${schema}.${table}`}>
+            {schema}.{table}
+          </Menu.Item>
+        );
+      }
     });
+
+    setTableMenuItems(tableItems);
+  }
+
+  const tableClicked = (event) => {
+    const sql = `Select\t*\r\nFrom ${event.key}`;
+
+    editorDispatch({ type: 'update', key: 'sql', value: sql });
   }
 
   return (
     <Menu
       mode='inline'
-      style={{ width: '100%' }}
+      style={{ width: '100%', height: 'calc(100vh - 50px)' }}
       theme='dark'
       defaultOpenKeys={['tables']}
+      onClick={tableClicked}
+      selectedKeys={[]}
     >
       <Menu.SubMenu
         key='tables'
@@ -72,7 +93,7 @@ function ObjectsPanel(props) {
           </Fragment>
         }
       >
-        {generateTableList()}
+        {tableMenuItems}
       </Menu.SubMenu>
     </Menu>
   );

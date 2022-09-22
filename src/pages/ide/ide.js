@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Layout, Row } from 'antd';
 import { CodeEditor } from '../../panels/codeEditor';
 import { ObjectsPanel } from '../../panels/objects';
@@ -6,6 +6,7 @@ import { EditorProvider } from '../../context/editorContext';
 import ResultsTable from '../../components/resultsTable';
 import { useNavigate } from 'react-router-dom';
 import { useDbDispatch } from '../../context';
+import InternalObjectToggle from '../../components/internalObjectToggle';
 
 
 const { Sider, Content } = Layout;
@@ -23,16 +24,15 @@ function IDE() {
   }
 
   return (
-    <Fragment>
+    <EditorProvider>
       <Sider>
-        <ObjectsPanel />  
+        <ObjectsPanel />
+        <InternalObjectToggle />
       </Sider>
       <Layout>
         <Content>
           <Row>
-            <EditorProvider>
-              <CodeEditor />
-            </EditorProvider>
+            <CodeEditor />
           </Row>
           <Row>
             <ResultsTable
@@ -44,7 +44,7 @@ function IDE() {
           </Row>
         </Content>
       </Layout>
-    </Fragment>
+    </EditorProvider>
   );
 }
 

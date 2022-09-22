@@ -4,9 +4,16 @@ import { BufferPool } from '../database/bufferPool';
 import { startup } from '../database/server';
 import { clearLocalStorage, NOTIF, Pubsub } from '../utilities';
 import sqliteParser from 'sqlite-parser';
+import { Parser } from 'node-sql-parser';
 import { executeQuery } from '../database/queryProcessor';
 
 const buffer = new BufferPool(10);
+
+const parser = new Parser();
+
+const parserConfig = {
+  database: 'TransactSQL'
+};
 
 function DbWrapper(props) {
 
@@ -44,25 +51,62 @@ function DbWrapper(props) {
     dbDispatch({ type: 'update', key: 'pageDataTrigger', value: new Date().valueOf() });
   }
 
-  const processQuery = (query) => {
-    // console.log('received query: ');
-    // console.log(query);
+  // const processQuery = (query) => {
+  //   // console.log('received query: ');
+  //   // console.log(query);
 
+  //   try {
+  //     const tree = sqliteParser(query.sql);
+  //     const tree2 = parser.astify(query.sql, parserConfig);
+  //     console.log(tree);
+  //     console.log(tree2);
+
+  //     let queryTree;
+
+  //     if (tree.type == 'statement' && tree.variant == 'list') {
+  //       if (tree.statement.length > 1) {
+  //         throw new Error('Only one query at a time is currently supported');
+  //       } else {
+  //         queryTree = tree.statement[0];
+  //       }
+  //     }
+
+  //     // console.log(queryTree);
+
+  //     const queryResult = executeQuery(buffer, queryTree);
+
+  //     const result = {
+  //       queryId: query.id,
+  //       type: 'RESULTS',
+  //       recordset: queryResult.resultset,
+  //       columnDefinitions: queryResult.columnDefinitions
+  //     };
+  //     Pubsub.publish(NOTIF.QUERY_RESULT, result);
+  //   } catch (error) {
+  //     console.log(error);
+  //     const result = {
+  //       queryId: query.id,
+  //       type: 'ERROR',
+  //       error: error
+  //     }
+  //     Pubsub.publish(NOTIF.QUERY_RESULT, result);
+  //   }
+  // }
+
+  const processQuery = (query) => {
     try {
-      const tree = sqliteParser(query.sql);
-      // console.log(tree);
+      const tree = parser.astify(query.sql, parserConfig);
+      console.log(tree);
 
       let queryTree;
 
-      if (tree.type == 'statement' && tree.variant == 'list') {
-        if (tree.statement.length > 1) {
-          throw new Error('Only one query at a time is currently supported');
-        } else {
-          queryTree = tree.statement[0];
-        }
+      if (Array.isArray(tree) && tree.length > 1) {
+        throw new Error('Only one query at a time is currently supported');
+      } else if (Array.isArray(tree)) {
+        queryTree = tree[0];
+      } else {
+        queryTree = tree;
       }
-
-      // console.log(queryTree);
 
       const queryResult = executeQuery(buffer, queryTree);
 
@@ -82,6 +126,7 @@ function DbWrapper(props) {
       }
       Pubsub.publish(NOTIF.QUERY_RESULT, result);
     }
+
   }
 
   return props.children;
