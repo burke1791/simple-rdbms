@@ -3,6 +3,7 @@ import { Divider, Row } from 'antd';
 import { NullBitmapOffset, NullBitmapOffsetDetails } from './nullBitmapOffset';
 import { FixedLengthColumns, FixedLengthColumnDetails } from './fixedLengthColumns';
 import { NullBitmap, NullBitmapDetails } from './nullBitmap';
+import { VariableLengthOffsetArray, VariableLengthOffsetArrayDetails } from './variableOffsetArray';
 
 /**
  * @typedef RecordPopoverProps
@@ -18,7 +19,11 @@ import { NullBitmap, NullBitmapDetails } from './nullBitmap';
 function RecordPopover(props) {
 
   return (
-    <Fragment>
+    <Fragment
+      style={{
+        maxWidth: '50vw'
+      }}
+    >
       <Row>
         <NullBitmapOffset data={parseNullBitmapOffset(props.data)} />
         <FixedLengthColumns data={parseFixedLengthColumns(props.data, props.markers)} />
@@ -32,17 +37,9 @@ function RecordPopover(props) {
       <FixedLengthColumnDetails data={parseFixedLengthColumns(props.data, props.markers)} />
       <Divider orientation='left'>Null Bitmap</Divider>
       <NullBitmapDetails data={parseNullBitmap(props.data, props.markers)} />
+      <Divider orientation='left'>Variable Offset Array</Divider>
+      <VariableLengthOffsetArrayDetails data={parseVariableLengthOffsetArray(props.data, props.markers)} />
     </Fragment>
-  );
-}
-
-
-
-
-function VariableLengthOffsetArray(props) {
-
-  return (
-    <span className='record-structure-chunk'>{props.data}</span>
   );
 }
 
