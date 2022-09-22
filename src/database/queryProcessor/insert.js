@@ -23,26 +23,23 @@ export function executeInsert(buffer, queryTree, requestor) {
   */
 
   // Setp 1
-  const values = queryTree.result.map(row => {
+  const values = queryTree.values.map(row => {
     const columns = [];
-    for (let i in row.expression) {
-      const type = row.expression[i].type;
-      const variant = row.expression[i].variant;
-
-      if (type != 'literal') throw new Error('Insert values must be literals');
-
+    for (let i in row.value) {
       let value;
 
-      switch (variant) {
+      const type = row.value[i].type
+
+      switch (type) {
         case 'null':
           value = null;
           break;
         default:
-          value = row.expression[i].value;
+          value = row.value[i].value;
       }
 
       columns.push({
-        name: queryTree.into.columns[i].name,
+        name: queryTree.columns[i],
         value: value
       });
     }
@@ -53,17 +50,8 @@ export function executeInsert(buffer, queryTree, requestor) {
   console.log(values);
 
   // Step 2
-  const table = queryTree.into.name.split('.');
-  let schemaName;
-  let tableName;
-
-  if (table.length == 2) {
-    schemaName = table[0];
-    tableName = table[1]; 
-  } else if (table.length == 1) {
-    schemaName = 'dbo';
-    tableName = table[0];
-  }
+  const schemaName = queryTree.table[0].db || 'dbo';
+  const tableName = queryTree.table[0].table;
 
   if (schemaName == 'sys' && requestor != 'SYSTEM') throw new Error('You cannot insert into system tables!');
 

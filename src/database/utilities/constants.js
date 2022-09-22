@@ -7,3 +7,9 @@ export const SQL_CLAUSES = [
   'from',
   'where'
 ];
+
+export const STATIC_PAGE_IDS = {
+  OBJECTS: 1,
+  SEQUENCES: 2,
+  COLUMNS: 3
+};

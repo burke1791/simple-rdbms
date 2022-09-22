@@ -4,6 +4,14 @@ import { writePageToDisk } from '../storageEngine';
 import { getNewColumnInsertValues, _getNewColumnInsertValues } from './columns';
 import sqliteParser from 'sqlite-parser';
 import { executeUpdate } from '../queryProcessor/update';
+import { Parser } from 'node-sql-parser';
+import { extractSingleQueryTree } from '../queryProcessor/treeParser';
+
+const parser = new Parser();
+
+const parserConfig = {
+  database: 'TransactSQL'
+};
 
 export const sequencesTableDefinition = [
   {
@@ -166,8 +174,10 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
     query = query + 'And column_id = ' + columnId;
   }
 
-  const tree = sqliteParser(query);
-  const predicate = tree.statement[0].where;
+  const tree = parser.astify(query, parserConfig);
+
+  const queryTree = extractSingleQueryTree(tree);
+  const predicate = queryTree.where;
 
   const resultset = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
 
@@ -187,9 +197,10 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
     Where sequence_id = ${sequenceId}
   `;
 
-  const updTree = sqliteParser(query);
+  const updTree = extractSingleQueryTree(parser.astify(query, parserConfig));
+  console.log(updTree);
 
-  const rowCount = executeUpdate(buffer, updTree.statement[0], 'SYSTEM');
+  const rowCount = executeUpdate(buffer, updTree, 'SYSTEM');
 
   return nextSequenceValue;
 }

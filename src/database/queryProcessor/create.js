@@ -1,6 +1,7 @@
 import { generateBlankPage } from "../bufferPool/serializer";
 import { writePageToDisk } from "../storageEngine";
 import { getNewSequenceInsertValues, getNextSequenceValue, _getNewColumnInsertValues, _getNewObjectInsertValues } from "../system";
+import { STATIC_PAGE_IDS } from "../utilities/constants";
 
 /**
  * @function
@@ -9,7 +10,7 @@ import { getNewSequenceInsertValues, getNextSequenceValue, _getNewColumnInsertVa
  * @returns {Array<Array<ResultCell>>}
  */
 export function executeCreate(buffer, queryTree) {
-  const objectType = queryTree.format;
+  const objectType = queryTree.keyword;
 
   switch (objectType) {
     case 'table':
@@ -49,24 +50,16 @@ function createTable(buffer, queryTree) {
   // Step 2
   const objectId = getNextSequenceValue(buffer, 2, 1);
 
-  const table = queryTree.name.name.split('.');
-  let schemaName;
-  let tableName;
-
-  if (table.length == 2) {
-    schemaName = table[0];
-    tableName = table[1]; 
-  } else if (table.length == 1) {
-    schemaName = 'dbo';
-    tableName = table[0];
-  }
+  const schemaName = queryTree.table[0].db || 'dbo';
+  const tableName = queryTree.table[0].table;
 
   const newObjValues = _getNewObjectInsertValues(objectId, 1, false, schemaName, tableName, pageId, null);
 
   buffer.executeSystemObjectInsert(newObjValues);
+  buffer.flushPageToDisk(STATIC_PAGE_IDS.OBJECTS);
 
   // Step 3
-  const definitions = generateColumnDefinitions(queryTree.definition);
+  const definitions = generateColumnDefinitions(queryTree.create_definitions);
 
   definitions.forEach(def => {
     const columnId = getNextSequenceValue(buffer, 4, 13);
@@ -80,6 +73,11 @@ function createTable(buffer, queryTree) {
       buffer.executeSystemSequenceInsert(seqValues);
     }
   });
+
+  buffer.flushPageToDisk(STATIC_PAGE_IDS.SEQUENCES);
+  buffer.flushPageToDisk(STATIC_PAGE_IDS.COLUMNS);
+
+  return [];
 }
 
 /**
@@ -102,10 +100,10 @@ function generateColumnDefinitions(definitions) {
  * @returns {ColumnDefinition}
  */
 function parseDefinitionNode(node) {
-  if (node.type != 'definition' || node.variant != 'column') throw new Error('Cannot parse definition');
+  if (node.resource != 'column') throw new Error('Cannot parse definition');
 
   const def = {
-    name: node.name,
+    name: node.column.column,
     isVariable: false,
     isNullable: true,
     isPrimaryKey: false,
@@ -114,30 +112,30 @@ function parseDefinitionNode(node) {
 
   parseConstraints(def, node);
 
-  switch (node.datatype.variant) {
-    case 'tinyint':
+  switch (node.definition.dataType) {
+    case 'TINYINT':
       def.dataType = 0;
       break;
-    case 'smallint':
+    case 'SMALLINT':
       def.dataType = 1;
       break;
-    case 'int':
+    case 'INT':
       def.dataType = 2;
       break;
-    case 'bigint':
+    case 'BIGINT':
       def.dataType = 3;
       break;
-    case 'bit':
+    case 'BIT':
       def.dataType = 4;
       break;
-    case 'char':
+    case 'CHAR':
       def.dataType = 5;
-      def.maxLength = parseColumnLength(node.datatype.args);
+      def.maxLength = node.definition.length || 1;
       break;
-    case 'varchar':
+    case 'VARCHAR':
       def.dataType = 6;
       def.isVariable = true;
-      def.maxLength = parseColumnLength(node.datatype.args);
+      def.maxLength = node.definition.length || 30;
       break;
     default:
       throw new Error('Unsupported data type');
@@ -152,24 +150,17 @@ function parseDefinitionNode(node) {
  * @param {SqlDefinitionNode} node 
  */
 function parseConstraints(def, node) {
-  node.definition.forEach(colDef => {
-    if (colDef.type == 'constraint') {
-      switch (colDef.variant) {
-        case 'not null':
-          def.isNullable = false;
-          break;
-        case 'primary key':
-          def.isPrimaryKey = true;
-          def.autoIncrement = !!colDef?.autoIncrement;
-          break;
-        case 'null':
-          def.isNullable = true;
-          break;
-        default:
-          throw new Error('Unsupported constraint');
-      }
-    }
-  });
+  if (node.auto_increment) {
+    def.autoIncrement = true;
+  }
+
+  if (node.unique_or_primary && node.unique_or_primary == 'primary key') {
+    def.isPrimaryKey = true;
+  }
+
+  if (node.nullable.type == 'not null') {
+    def.isNullable = false;
+  }
 }
 
 /**

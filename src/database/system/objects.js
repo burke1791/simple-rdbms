@@ -2,7 +2,6 @@ import BufferPool from '../bufferPool';
 import { generateBlankPage } from '../bufferPool/serializer';
 import { writePageToDisk } from '../storageEngine';
 import { _getNewColumnInsertValues } from './columns';
-import sqliteParser from 'sqlite-parser';
 import { Parser } from 'node-sql-parser';
 import { extractSingleQueryTree } from '../queryProcessor/treeParser';
 

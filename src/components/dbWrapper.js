@@ -96,8 +96,8 @@ function DbWrapper(props) {
 
   const processQuery = (query) => {
     try {
-      const tree2 = sqliteParser(query.sql);
-      console.log(tree2);
+      // const tree2 = sqliteParser(query.sql);
+      // console.log(tree2);
       const tree = parser.astify(query.sql, parserConfig);
       console.log(tree);
 
@@ -108,8 +108,8 @@ function DbWrapper(props) {
       const result = {
         queryId: query.id,
         type: 'RESULTS',
-        recordset: queryResult.resultset,
-        columnDefinitions: queryResult.columnDefinitions
+        recordset: queryResult.resultset || [],
+        columnDefinitions: queryResult.columnDefinitions || []
       };
       Pubsub.publish(NOTIF.QUERY_RESULT, result);
     } catch (error) {

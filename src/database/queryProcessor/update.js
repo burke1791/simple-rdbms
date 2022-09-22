@@ -13,19 +13,10 @@ import { getColumnDefinitionsByTableObjectId, getTableObjectByName } from '../sy
  * @returns {Number}
  */
 export function executeUpdate(buffer, queryTree, requestor) {
-  if (queryTree.into.type != 'identifier' || queryTree.into.variant != 'table') throw new Error('Unable to perform this update operation');
+  if (queryTree.table.length > 1) throw new Error('Unable to perform this update operation');
 
-  const table = queryTree.into.name.split('.');
-  let schemaName;
-  let tableName;
-
-  if (table.length == 2) {
-    schemaName = table[0];
-    tableName = table[1]; 
-  } else if (table.length == 1) {
-    schemaName = 'dbo';
-    tableName = table[0];
-  }
+  const schemaName = queryTree.table[0].db || 'dbo';
+  const tableName = queryTree.table[0].table;
 
   if (schemaName == 'sys' && requestor !== 'SYSTEM') throw new Error('You cannot update system tables!');
 
@@ -71,9 +62,7 @@ export function executeUpdate(buffer, queryTree, requestor) {
  */
 function getUpdateNode(colName, setNodes) {
   for (let node of setNodes) {
-    if (node.target.type != 'identifier' && node.target.type != 'column') throw new Error('Unable to perform this update operation');
-
-    if (node.target.name.toLowerCase() == colName.toLowerCase()) return node.value;
+    if (node.column.toLowerCase() == colName.toLowerCase()) return node.value;
   }
 
   return null;
@@ -102,20 +91,18 @@ function computeUpdateValue(node, row) {
     }
 
     return value;
-  } else if (node.type == 'identifier') {
-    const name = node.name;
+  } else if (node.type == 'column_ref') {
+    const name = node.column;
     const col = row.find(c => c.name == name);
 
     if (col == undefined) throw new Error('referenced column not found');
 
     return col.value;
-  } else if (node.type == 'expression') {
-    if (node.variant != 'operation') throw new Error('Unknown update expression variant');
-
+  } else if (node.type == 'binary_expr') {
     const left = computeUpdateValue(node.left, row);
     const right = computeUpdateValue(node.right, row);
 
-    switch (node.operation) {
+    switch (node.operator) {
       case '+':
         return +left + +right;
       case '-':
