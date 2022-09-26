@@ -40,6 +40,8 @@ export function executeUpdate(buffer, queryTree, requestor) {
     });
   });
 
+  console.log(updatedRows);
+
   const updatedRecords = updatedRows.map(row => {
     const pk = row.find(col => col.name == pkName);
     return {
@@ -91,6 +93,8 @@ function computeUpdateValue(node, row) {
     }
 
     return value;
+  } else if (node.type == 'string') {
+    return node.value;
   } else if (node.type == 'column_ref') {
     const name = node.column;
     const col = row.find(c => c.name == name);

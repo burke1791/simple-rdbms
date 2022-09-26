@@ -41,7 +41,7 @@ function DbWrapper(props) {
   }, [pageIdRequestTrigger]);
 
   const startDbServer = () => {
-    // clearLocalStorage();
+    clearLocalStorage();
     startup(buffer);
     dbConnectionDispatch({ type: 'update', key: 'connected', value: true });
   }

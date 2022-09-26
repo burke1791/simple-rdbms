@@ -4,6 +4,7 @@ import { NullBitmapOffset, NullBitmapOffsetDetails } from './nullBitmapOffset';
 import { FixedLengthColumns, FixedLengthColumnDetails } from './fixedLengthColumns';
 import { NullBitmap, NullBitmapDetails } from './nullBitmap';
 import { VariableLengthOffsetArray, VariableLengthOffsetArrayDetails } from './variableOffsetArray';
+import { VariableLengthColumns, VariableLengthColumnDetails } from './variableColumns';
 
 /**
  * @typedef RecordPopoverProps
@@ -35,14 +36,9 @@ function RecordPopover(props) {
       <NullBitmapDetails data={parseNullBitmap(props.data, props.markers)} />
       <Divider orientation='left'>Variable Offset Array</Divider>
       <VariableLengthOffsetArrayDetails data={parseVariableLengthOffsetArray(props.data, props.markers)} />
+      <Divider orientation='left'>Variable Length Columns</Divider>
+      <VariableLengthColumnDetails data={parseVariableLengthColumns(props.data, props.markers)} />
     </Fragment>
-  );
-}
-
-function VariableLengthColumns(props) {
-
-  return (
-    <span className='record-structure-chunk'>{props.data}</span>
   );
 }
 

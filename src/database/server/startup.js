@@ -1,7 +1,7 @@
 import { BufferPool } from '../bufferPool';
 import { fileExists } from '../storageEngine/reader';
 import { initColumnsTableDefinition, initializeColumnsTable, initializeObjectsTable, initializeSequencesTable, initObjectsTableDefinition, initSequencesTableDefinition } from '../system';
-import { createPersonTable } from './createPersonTable';
+import { createPersonTable, insertDummyPersonData } from './createPersonTable';
 
 /**
  * @function
@@ -24,6 +24,7 @@ export function startup(buffer) {
 
       // seed the database with example data
       createPersonTable(buffer);
+      insertDummyPersonData(buffer);
 
       buffer.flushAll();
     } else {
