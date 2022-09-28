@@ -40,8 +40,6 @@ export function executeUpdate(buffer, queryTree, requestor) {
     });
   });
 
-  console.log(updatedRows);
-
   const updatedRecords = updatedRows.map(row => {
     const pk = row.find(col => col.name == pkName);
     return {

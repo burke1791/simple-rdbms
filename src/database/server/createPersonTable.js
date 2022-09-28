@@ -29,6 +29,7 @@ export function createPersonTable(buffer) {
   const tree = parser.astify(createQuery, parserConfig);
 
   const queryTree = extractSingleQueryTree(tree);
+  console.log(queryTree);
 
   executeQuery(buffer, queryTree);
 }

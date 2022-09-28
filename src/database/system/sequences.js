@@ -182,8 +182,6 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
   const resultset = buffer.pageScan(2, predicate, sequencesTableDefinition, []);
 
   if (resultset.length > 1) {
-    console.log(resultset);
-    console.log(predicate);
     throw new Error('getNextSequenceValue: returned more than one result for schema: ' + predicate);
   }
 
@@ -198,7 +196,6 @@ export function getNextSequenceValue(buffer, objectId, columnId) {
   `;
 
   const updTree = extractSingleQueryTree(parser.astify(query, parserConfig));
-  console.log(updTree);
 
   const rowCount = executeUpdate(buffer, updTree, 'SYSTEM');
 
